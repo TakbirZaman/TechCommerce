@@ -9,6 +9,12 @@ fastapi
 uvicorn[standard]
 pydantic>=2
 
+# Database
+sqlalchemy>=2
+
+# Auth
+python-multipart
+
 # Async jobs
 celery
 redis

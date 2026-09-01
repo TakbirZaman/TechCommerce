@@ -90,8 +90,8 @@ class SpecificationOption(Base):
     sort_order: Mapped[int] = mapped_column(Integer, default=0)  # For ordering in dropdowns
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     
-    # Additional metadata for the option
-    metadata: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # e.g., TDP, benchmarks
+    # Additional data for the option (TDP, benchmarks, etc.)
+    extra_data: Mapped[dict | None] = mapped_column("metadata", JSON, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

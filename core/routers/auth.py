@@ -14,6 +14,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+from core.models.user import User
 from core.services.auth_service import (
     authenticate_user,
     create_refresh_token,
@@ -72,7 +73,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     if user_id is None:
         return None
     
-    return db.get("User", user_id)
+    return db.get(User, user_id)
 
 
 def require_auth(request: Request, db: Session = Depends(get_db)):

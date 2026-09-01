@@ -4,3 +4,18 @@ dist/
 build/
 *.log
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.db
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Build artifacts
+*.pyc
+__pycache__/

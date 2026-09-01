@@ -35,8 +35,8 @@ class UserEvent(Base):
     result_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     selected_product_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     
-    # Metadata
-    metadata: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # Extra data
+    extra_data: Mapped[dict | None] = mapped_column("metadata", JSON, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
