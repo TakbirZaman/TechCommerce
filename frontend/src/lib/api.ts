@@ -18,11 +18,21 @@ async function fetchAPI<T>(endpoint: string, options: RequestOptions = {}): Prom
     ...headers,
   };
 
-  // Add auth token if available
   if (typeof window !== 'undefined') {
+    // Add auth token if available
     const token = localStorage.getItem('access_token');
     if (token) {
       requestHeaders['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Add session ID for cart/commerce endpoints
+    if (endpoint.includes('/commerce/')) {
+      let sessionId = localStorage.getItem('session_id');
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        localStorage.setItem('session_id', sessionId);
+      }
+      requestHeaders['X-Session-ID'] = sessionId;
     }
   }
 
@@ -30,6 +40,7 @@ async function fetchAPI<T>(endpoint: string, options: RequestOptions = {}): Prom
     method,
     headers: requestHeaders,
     body: body ? JSON.stringify(body) : undefined,
+    credentials: 'include',
   });
 
   if (!response.ok) {

@@ -6,10 +6,10 @@ Guest checkout - no login required.
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from core.database import get_db
 from core.models.commerce import (
@@ -98,8 +98,10 @@ class OrderTrackRequest(BaseModel):
 
 # Helper functions
 def get_session_id(request: Request) -> str:
-    """Get or create session ID from cookie."""
+    """Get or create session ID from cookie or header."""
     session_id = request.cookies.get("session_id")
+    if not session_id:
+        session_id = request.headers.get("X-Session-ID")
     if not session_id:
         import secrets
         session_id = secrets.token_urlsafe(32)
@@ -108,12 +110,47 @@ def get_session_id(request: Request) -> str:
 
 def get_or_create_cart(db: Session, session_id: str) -> Cart:
     """Get or create cart for session."""
-    cart = db.execute(select(Cart).where(Cart.session_id == session_id)).scalar_one_or_none()
+    cart = db.execute(
+        select(Cart).where(Cart.session_id == session_id).options(selectinload(Cart.items))
+    ).scalar_one_or_none()
     if cart is None:
         cart = Cart(session_id=session_id)
         db.add(cart)
         db.flush()
     return cart
+
+
+def build_cart_response(db: Session, session_id: str) -> CartResponse:
+    """Build cart response for a session. Used by all cart endpoints."""
+    cart = db.execute(
+        select(Cart).where(Cart.session_id == session_id).options(selectinload(Cart.items))
+    ).scalar_one_or_none()
+    if cart is None:
+        return CartResponse(items=[], total_items=0, subtotal=0.0)
+
+    items = []
+    total = Decimal("0.00")
+
+    for item in cart.items:
+        product = db.get(Product, item.product_id)
+        if product and product.is_active:
+            subtotal = Decimal(str(product.price)) * item.quantity
+            items.append(CartItemResponse(
+                id=item.id,
+                product_id=product.id,
+                product_name=product.name,
+                product_image=product.images[0].url if product.images else None,
+                unit_price=float(product.price),
+                quantity=item.quantity,
+                subtotal=float(subtotal),
+            ))
+            total += subtotal
+
+    return CartResponse(
+        items=items,
+        total_items=sum(i.quantity for i in items),
+        subtotal=float(total),
+    )
 
 
 def calculate_delivery_charge(db: Session, city: str, area: str | None = None) -> Decimal:
@@ -194,40 +231,18 @@ def generate_order_number(db: Session, year: int) -> str:
 
 # Cart endpoints
 @router.get("/cart", response_model=CartResponse)
-def get_cart(request: Request, db: Session = Depends(get_db)):
+def get_cart(request: Request, response: Response, db: Session = Depends(get_db)):
     """Get current cart contents."""
     session_id = get_session_id(request)
-    cart = get_or_create_cart(db, session_id)
-    
-    items = []
-    total = Decimal("0.00")
-    
-    for item in cart.items:
-        product = db.get(Product, item.product_id)
-        if product and product.is_active:
-            subtotal = product.price * item.quantity
-            items.append(CartItemResponse(
-                id=item.id,
-                product_id=product.id,
-                product_name=product.name,
-                product_image=product.images[0].url if product.images else None,
-                unit_price=float(product.price),
-                quantity=item.quantity,
-                subtotal=float(subtotal),
-            ))
-            total += subtotal
-    
-    return CartResponse(
-        items=items,
-        total_items=sum(i.quantity for i in items),
-        subtotal=float(total),
-    )
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    return build_cart_response(db, session_id)
 
 
 @router.post("/cart/items", response_model=CartResponse)
 def add_to_cart(
     payload: CartItemAddRequest,
     request: Request,
+    response: Response,
     db: Session = Depends(get_db),
 ):
     """Add item to cart."""
@@ -239,6 +254,7 @@ def add_to_cart(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock")
     
     session_id = get_session_id(request)
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
     cart = get_or_create_cart(db, session_id)
     
     # Check if item already in cart
@@ -253,7 +269,7 @@ def add_to_cart(
     
     db.commit()
     
-    return get_cart(request, db)
+    return build_cart_response(db, session_id)
 
 
 @router.put("/cart/items/{item_id}", response_model=CartResponse)
@@ -261,10 +277,12 @@ def update_cart_item(
     item_id: int,
     payload: CartItemUpdateRequest,
     request: Request,
+    response: Response,
     db: Session = Depends(get_db),
 ):
     """Update cart item quantity."""
     session_id = get_session_id(request)
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
     cart = get_or_create_cart(db, session_id)
     
     item = db.execute(
@@ -281,17 +299,19 @@ def update_cart_item(
     item.quantity = payload.quantity
     db.commit()
     
-    return get_cart(request, db)
+    return build_cart_response(db, session_id)
 
 
 @router.delete("/cart/items/{item_id}", response_model=CartResponse)
 def remove_from_cart(
     item_id: int,
     request: Request,
+    response: Response,
     db: Session = Depends(get_db),
 ):
     """Remove item from cart."""
     session_id = get_session_id(request)
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
     cart = get_or_create_cart(db, session_id)
     
     item = db.execute(
@@ -304,13 +324,14 @@ def remove_from_cart(
     db.delete(item)
     db.commit()
     
-    return get_cart(request, db)
+    return build_cart_response(db, session_id)
 
 
 @router.delete("/cart", response_model=CartResponse)
-def clear_cart(request: Request, db: Session = Depends(get_db)):
+def clear_cart(request: Request, response: Response, db: Session = Depends(get_db)):
     """Clear all items from cart."""
     session_id = get_session_id(request)
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
     cart = get_or_create_cart(db, session_id)
     
     for item in cart.items:
@@ -318,7 +339,7 @@ def clear_cart(request: Request, db: Session = Depends(get_db)):
     
     db.commit()
     
-    return get_cart(request, db)
+    return build_cart_response(db, session_id)
 
 
 # Checkout endpoint
@@ -326,12 +347,14 @@ def clear_cart(request: Request, db: Session = Depends(get_db)):
 def checkout(
     payload: CheckoutRequest,
     request: Request,
+    response: Response,
     db: Session = Depends(get_db),
 ):
     """
     Complete checkout - guest checkout, no login required.
     """
     session_id = get_session_id(request)
+    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
     cart = get_or_create_cart(db, session_id)
     
     if not cart.items:
@@ -349,7 +372,7 @@ def checkout(
         if product.available_stock < cart_item.quantity:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Insufficient stock for {product.name}")
         
-        line_total = product.price * cart_item.quantity
+        line_total = Decimal(str(product.price)) * cart_item.quantity
         subtotal += line_total
         
         order_items.append(OrderItem(
@@ -428,12 +451,12 @@ def checkout(
         delivery_charge=float(order.delivery_charge),
         total_amount=float(order.total_amount),
         payment_method=order.payment_method,
-        payment_status=order.payment_status,
-        order_status=order.order_status,
+        payment_status=order.payment_status.value if order.payment_status else "unpaid",
+        order_status=order.order_status.value if order.order_status else "pending",
         shipping_address=order.shipping_address,
         shipping_city=order.shipping_city,
         shipping_area=order.shipping_area,
-        items=[],
+        items=[{"product_name": i.product_name, "quantity": i.quantity, "subtotal": float(i.subtotal)} for i in order.items],
         created_at=order.created_at.isoformat() if order.created_at else "",
     )
 
@@ -466,11 +489,11 @@ def track_order(
         delivery_charge=float(order.delivery_charge),
         total_amount=float(order.total_amount),
         payment_method=order.payment_method,
-        payment_status=order.payment_status,
-        order_status=order.order_status,
+        payment_status=order.payment_status.value if order.payment_status else "unpaid",
+        order_status=order.order_status.value if order.order_status else "pending",
         shipping_address=order.shipping_address,
         shipping_city=order.shipping_city,
         shipping_area=order.shipping_area,
-        items=[],
+        items=[{"product_name": i.product_name, "quantity": i.quantity, "subtotal": float(i.subtotal)} for i in order.items],
         created_at=order.created_at.isoformat() if order.created_at else "",
     )
