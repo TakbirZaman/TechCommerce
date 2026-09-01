@@ -79,8 +79,10 @@ class SuggestedComponentResponse(BaseModel):
 
 # Helper functions
 def get_session_id(request: Request) -> str:
-    """Get session ID from cookie."""
+    """Get session ID from cookie or header."""
     session_id = request.cookies.get("session_id")
+    if not session_id:
+        session_id = request.headers.get("X-Session-ID")
     if not session_id:
         import secrets
         session_id = secrets.token_urlsafe(32)

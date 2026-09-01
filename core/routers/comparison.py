@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from core.database import get_db
+from core.models.catalog import Category
 from core.models.comparison import Comparison, ComparisonItem, MAX_COMPARISON_ITEMS
 from core.models.specification import Product, SpecificationTemplate
 
@@ -55,8 +56,10 @@ class ComparisonSummaryResponse(BaseModel):
 
 # Helper functions
 def get_session_id(request: Request) -> str:
-    """Get session ID from cookie."""
+    """Get session ID from cookie or header."""
     session_id = request.cookies.get("session_id")
+    if not session_id:
+        session_id = request.headers.get("X-Session-ID")
     if not session_id:
         import secrets
         session_id = secrets.token_urlsafe(32)
@@ -92,7 +95,7 @@ def list_comparisons(request: Request, db: Session = Depends(get_db)):
     
     result = []
     for comp in comparisons:
-        category = db.get("Category", comp.category_id)
+        category = db.get(Category, comp.category_id)
         result.append(ComparisonSummaryResponse(
             id=comp.id,
             product_count=len(comp.items),
@@ -122,7 +125,7 @@ def get_comparison(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comparison not found")
     
     # Get category and spec template
-    category = db.get("Category", comparison.category_id)
+    category = db.get(Category, comparison.category_id)
     template = db.execute(
         select(SpecificationTemplate).where(SpecificationTemplate.category_id == comparison.category_id)
     ).scalar_one_or_none()
@@ -224,7 +227,7 @@ def add_to_comparison(
     db.add(item)
     db.commit()
     
-    category = db.get("Category", comparison.category_id)
+    category = db.get(Category, comparison.category_id)
     return ComparisonSummaryResponse(
         id=comparison.id,
         product_count=len(comparison.items) + 1,
