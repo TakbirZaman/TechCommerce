@@ -7,28 +7,89 @@ body {
   background: #ffffff;
 }
 
+/* ---- Selection color ---- */
+::selection {
+  background: rgba(37, 99, 235, 0.25);
+  color: #1e3a8a;
+}
+
+/* ---- Custom scrollbar ---- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #60a5fa, #2563eb);
+  border-radius: 8px;
+  border: 2px solid #f1f5f9;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+}
+
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-gradient-to-br from-primary-500 to-primary-700 text-white px-4 py-2 rounded-lg shadow-md shadow-primary-600/25 hover:shadow-glow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-out-expo disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors;
+    @apply bg-gray-100 text-gray-800 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-200 hover:border-gray-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-out-expo;
   }
   
   .btn-danger {
-    @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors;
+    @apply bg-gradient-to-br from-red-500 to-red-700 text-white px-4 py-2 rounded-lg shadow-md shadow-red-600/25 hover:shadow-[0_0_24px_-4px_rgba(220,38,38,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-out-expo;
   }
   
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/60 focus:border-primary-500 focus:shadow-glow-sm;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-md p-4;
+    @apply bg-white rounded-xl shadow-md shadow-gray-900/5 ring-1 ring-gray-900/5 p-4 transition-shadow duration-300;
   }
   
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 rounded-xl shadow-lg shadow-gray-900/5;
+  }
+}
+
+@layer utilities {
+  /* Gradient-clipped headline text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #60a5fa 0%, #a78bfa 50%, #38bdf8 100%);
+    background-size: 200% auto;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  /* Animated skeleton shimmer bar */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(229, 231, 235, 0.6) 25%,
+      rgba(243, 244, 246, 0.9) 50%,
+      rgba(229, 231, 235, 0.6) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s linear infinite;
+  }
+}
+
+/* ---- Reduced motion: honor user preference globally ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
