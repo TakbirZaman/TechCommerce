@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-python:
+    name: Python Backend (Commerce & Discovery)
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: techcommerce_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r commerce-system/backend/requirements.txt
+          pip install -r discovery/backend/requirements.txt
+          pip install pytest pytest-cov ruff mypy
+      
+      - name: Lint with ruff
+        run: |
+          ruff check commerce-system/backend/ discovery/backend/ ml/
+          ruff format --check commerce-system/backend/ discovery/backend/ ml/
+      
+      - name: Type check with mypy
+        run: |
+          mypy commerce-system/backend/ discovery/backend/ --ignore-missing-imports
+        continue-on-error: true
+      
+      - name: Run commerce tests
+        env:
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/techcommerce_test
+          JWT_SECRET_KEY: test-secret-key
+          STORAGE_BUCKET: test-bucket
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          cd commerce-system/backend
+          pytest tests/ -v --cov=app --cov-report=xml
+      
+      - name: Run discovery tests
+        env:
+          DISCOVERY_DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/techcommerce_test
+          DISCOVERY_JWT_SECRET_KEY: test-secret-key
+          DISCOVERY_REDIS_URL: redis://localhost:6379/0
+        run: |
+          cd discovery/backend
+          pytest app/tests/ -v --cov=app --cov-report=xml
+
+  backend-node:
+    name: Node.js Backend (Core Platform)
+    runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+      
+      - name: Run tests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/techcommerce_test
+        run: npm test
+
+  frontend-discovery:
+    name: Frontend (Discovery)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: discovery/frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: discovery/frontend
+        run: npm ci
+      
+      - name: Lint
+        working-directory: discovery/frontend
+        run: npm run lint
+        continue-on-error: true
+      
+      - name: Build
+        working-directory: discovery/frontend
+        run: npm run build
+
+  frontend-commerce:
+    name: Frontend (Commerce)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: commerce-system/frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: commerce-system/frontend
+        run: npm ci
+      
+      - name: Lint
+        working-directory: commerce-system/frontend
+        run: npm run lint
+        continue-on-error: true
+      
+      - name: Build
+        working-directory: commerce-system/frontend
+        run: npm run build

@@ -22,12 +22,12 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
     # Auth - tokens are ISSUED by core-platform; commerce only verifies them.
-    JWT_SECRET_KEY: str
+    JWT_SECRET_KEY: str = "change-me-in-production"
     JWT_ALGORITHM: str = "HS256"
 
     # Storage
     STORAGE_PROVIDER: str = "s3"
-    STORAGE_BUCKET: str
+    STORAGE_BUCKET: str = ""
     STORAGE_REGION: str = "ap-southeast-1"
     STORAGE_ENDPOINT_URL: str | None = None
     STORAGE_ACCESS_KEY_ID: str | None = None
@@ -60,6 +60,28 @@ class Settings(BaseSettings):
     SSLCOMMERZ_IPN_URL: str = ""
 
     FRONTEND_BASE_URL: str = "http://localhost:3000"
+
+    def validate_required_settings(self) -> list[str]:
+        """
+        Validate required settings and return list of missing/invalid ones.
+        Call this at startup to fail fast.
+        """
+        warnings = []
+        
+        if self.JWT_SECRET_KEY == "change-me-in-production":
+            warnings.append("JWT_SECRET_KEY is using default value - change in production")
+        
+        if not self.STORAGE_BUCKET:
+            warnings.append("STORAGE_BUCKET is not set")
+        
+        if self.ENVIRONMENT == "production":
+            if not self.DATABASE_URL or "localhost" in self.DATABASE_URL:
+                warnings.append("DATABASE_URL points to localhost in production")
+            
+            if not self.REDIS_URL or "localhost" in self.REDIS_URL:
+                warnings.append("REDIS_URL points to localhost in production")
+        
+        return warnings
 
 
 @lru_cache

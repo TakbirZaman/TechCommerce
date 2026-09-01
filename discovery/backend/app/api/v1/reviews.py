@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.deps import CurrentUser, get_current_admin_user, get_current_user_required, get_db
+from app.core.rate_limiter import check_review_rate_limit, get_rate_limit_remaining
 from app.models.review import Review, ReviewModerationLog, ReviewStatus
 from app.models.stubs import Product
 from app.schemas.review import RatingAggregate, ReviewCreate, ReviewModerationAction, ReviewOut
@@ -15,11 +16,6 @@ from app.services.rating_aggregation import get_rating_aggregate, invalidate_rat
 from app.services.verified_purchase import find_qualifying_order_id
 
 router = APIRouter(tags=["reviews"])
-
-# STUB NOTE: real rate limiting should use core-platform's shared limiter
-# (e.g. a Redis-backed sliding window keyed by user_id) — see Section 17.
-# This module assumes a `check_rate_limit(user_id, bucket)` dependency
-# exists there; wire it in when integrating.
 
 
 @router.post("/products/{product_id}/reviews", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
@@ -29,6 +25,13 @@ async def create_review(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(get_current_user_required),
 ):
+    # Rate limiting check (Section 17)
+    if check_review_rate_limit(user.id):
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            f"Review rate limit exceeded. Maximum {5} reviews per hour."
+        )
+
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
@@ -81,6 +84,20 @@ def list_reviews(product_id: int, db: Session = Depends(get_db)):
 @router.get("/products/{product_id}/rating", response_model=RatingAggregate)
 async def get_rating(product_id: int, db: Session = Depends(get_db)):
     return await get_rating_aggregate(db, product_id)
+
+
+@router.get("/products/{product_id}/reviews/rate-limit")
+def get_review_rate_limit(
+    product_id: int,
+    user: CurrentUser = Depends(get_current_user_required),
+):
+    """Check remaining reviews allowed for current user."""
+    remaining = get_rate_limit_remaining(user.id)
+    return {
+        "remaining": remaining,
+        "limit": 5,
+        "window_seconds": 3600,
+    }
 
 
 @router.post("/admin/reviews/{review_id}/moderate", response_model=ReviewOut)

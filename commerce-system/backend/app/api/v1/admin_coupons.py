@@ -1,0 +1,164 @@
+"""
+Admin coupon management endpoints.
+"""
+from __future__ import annotations
+
+from datetime import datetime
+from decimal import Decimal
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.core.database import get_db
+from app.core.security import CurrentUser, require_admin
+from app.models.discount import Coupon, DiscountType
+
+router = APIRouter(prefix="/api/v1/admin/coupons", tags=["admin", "coupons"])
+
+
+class CouponCreate(BaseModel):
+    code: str
+    description: str | None = None
+    discount_type: DiscountType
+    discount_value: Decimal
+    min_order_amount: Decimal = Decimal("0")
+    max_discount_amount: Decimal | None = None
+    usage_limit: int | None = None
+    starts_at: datetime | None = None
+    expires_at: datetime | None = None
+
+
+class CouponUpdate(BaseModel):
+    description: str | None = None
+    discount_type: DiscountType | None = None
+    discount_value: Decimal | None = None
+    min_order_amount: Decimal | None = None
+    max_discount_amount: Decimal | None = None
+    usage_limit: int | None = None
+    is_active: bool | None = None
+    starts_at: datetime | None = None
+    expires_at: datetime | None = None
+
+
+class CouponResponse(BaseModel):
+    id: int
+    code: str
+    description: str | None
+    discount_type: DiscountType
+    discount_value: Decimal
+    min_order_amount: Decimal
+    max_discount_amount: Decimal | None
+    usage_limit: int | None
+    used_count: int
+    is_active: bool
+    starts_at: datetime | None
+    expires_at: datetime | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+@router.get("", response_model=list[CouponResponse])
+def list_coupons(
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    """List all coupons."""
+    coupons = db.execute(select(Coupon).order_by(Coupon.created_at.desc())).scalars().all()
+    return coupons
+
+
+@router.post("", response_model=CouponResponse, status_code=status.HTTP_201_CREATED)
+def create_coupon(
+    payload: CouponCreate,
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    """Create a new coupon."""
+    # Check if code already exists
+    existing = db.execute(select(Coupon).where(Coupon.code == payload.code.upper())).scalar_one_or_none()
+    if existing:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Coupon code already exists")
+
+    coupon = Coupon(
+        code=payload.code.upper(),
+        description=payload.description,
+        discount_type=payload.discount_type,
+        discount_value=payload.discount_value,
+        min_order_amount=payload.min_order_amount,
+        max_discount_amount=payload.max_discount_amount,
+        usage_limit=payload.usage_limit,
+        starts_at=payload.starts_at,
+        expires_at=payload.expires_at,
+    )
+    db.add(coupon)
+    db.commit()
+    db.refresh(coupon)
+    return coupon
+
+
+@router.put("/{coupon_id}", response_model=CouponResponse)
+def update_coupon(
+    coupon_id: int,
+    payload: CouponUpdate,
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    """Update an existing coupon."""
+    coupon = db.get(Coupon, coupon_id)
+    if not coupon:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
+
+    update_data = payload.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(coupon, field, value)
+
+    db.commit()
+    db.refresh(coupon)
+    return coupon
+
+
+@router.delete("/{coupon_id}")
+def delete_coupon(
+    coupon_id: int,
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    """Delete a coupon (soft delete by deactivating)."""
+    coupon = db.get(Coupon, coupon_id)
+    if not coupon:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
+
+    coupon.is_active = False
+    db.commit()
+    return {"status": "deactivated"}
+
+
+@router.post("/{coupon_id}/validate")
+def validate_coupon(
+    coupon_id: int,
+    amount: Decimal,
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    """Validate a coupon for a given amount (admin check)."""
+    from app.services.discount_service import validate_and_apply_coupon
+
+    coupon = db.get(Coupon, coupon_id)
+    if not coupon:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
+
+    try:
+        discount = validate_and_apply_coupon(db, coupon.code, amount)
+        return {
+            "valid": True,
+            "discount_amount": discount,
+            "coupon_code": coupon.code,
+        }
+    except Exception as e:
+        return {
+            "valid": False,
+            "error": str(e),
+        }

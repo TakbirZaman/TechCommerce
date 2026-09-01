@@ -22,26 +22,46 @@ from sqlalchemy.orm import Session
 from app.core.exceptions import EmptyCartError, InsufficientStockError, ProductNotPurchasableError
 from app.models.cart import Cart
 from app.models.core_platform_stubs import Product
+from app.models.discount import DeliveryZone
 from app.models.order import Order, OrderItem, OrderStatus, PaymentStatus
 from app.schemas.order import CheckoutRequest
 from app.services import inventory_service
+from app.services.discount_service import increment_coupon_usage, validate_and_apply_coupon
 from app.services.order_state_machine import transition_order_status
 from app.utils.order_number import generate_order_number
 
-# Flat delivery charge for now — a real implementation would look this up
-# from a shipping-zone table keyed by city/area. Kept explicit and isolated
-# here so it's a one-line change once that table exists.
-FLAT_DELIVERY_CHARGE = Decimal("60.00")
 
+def _calculate_delivery_charge(db: Session, city: str, area: str | None = None) -> Decimal:
+    """
+    Calculate delivery charge based on zone.
+    Falls back to default charge if zone not found.
+    """
+    # Try to find exact zone (city + area)
+    if area:
+        zone = db.execute(
+            select(DeliveryZone).where(
+                DeliveryZone.city.ilike(city),
+                DeliveryZone.area.ilike(area),
+                DeliveryZone.is_active == True,
+            )
+        ).scalar_one_or_none()
+        if zone:
+            return Decimal(str(zone.charge))
 
-def _calculate_discount(subtotal: Decimal, discount_code: str | None) -> Decimal:
-    """
-    Placeholder discount calculation. No discount-code table exists yet in
-    this branch, so any code is currently a no-op (returns 0). Wiring this
-    to a real promotions table is out of scope for Branch 2 per the spec
-    (Section 33 excludes advanced systems) but the seam is here.
-    """
-    return Decimal("0.00")
+    # Try city-only zone
+    zone = db.execute(
+        select(DeliveryZone).where(
+            DeliveryZone.city.ilike(city),
+            DeliveryZone.area.is_(None),
+            DeliveryZone.is_active == True,
+        )
+    ).scalar_one_or_none()
+
+    if zone:
+        return Decimal(str(zone.charge))
+
+    # Default charge for unknown zones
+    return Decimal("60.00")
 
 
 def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
@@ -83,8 +103,14 @@ def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
         )
         reservations.append((product.id, cart_item.quantity))
 
-    discount = _calculate_discount(subtotal, payload.discount_code)
-    delivery_charge = FLAT_DELIVERY_CHARGE
+    # Apply discount/coupon
+    discount = validate_and_apply_coupon(db, payload.discount_code, subtotal)
+
+    # Calculate delivery charge based on zone
+    delivery_charge = _calculate_delivery_charge(
+        db, payload.delivery.city, payload.delivery.area
+    )
+
     total_amount = subtotal - discount + delivery_charge
 
     order_number = generate_order_number(db, datetime.now(UTC).year)
@@ -116,6 +142,10 @@ def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
     inventory_service.reserve_order_items(db, reservations)
 
     transition_order_status(db, order, OrderStatus.PAYMENT_PENDING)
+
+    # Increment coupon usage if a coupon was used
+    if payload.discount_code:
+        increment_coupon_usage(db, payload.discount_code)
 
     # Clear the cart now that it has been converted into an order.
     for item in list(cart.items):

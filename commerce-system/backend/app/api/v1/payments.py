@@ -8,15 +8,17 @@ Payment API routes.
   but every one of them runs through payment_service.process_callback(),
   which enforces signature/shape checks + idempotency + server-side
   verification before trusting anything in the payload (Sections 16-17).
+- Rate limiting is applied to callback endpoints to prevent abuse.
 """
 import json
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException, status
 
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.exceptions import CommerceError
+from app.core.rate_limiter import check_payment_callback_rate_limit
 from app.core.security import CurrentUser, get_current_user
 from app.models.payment import PaymentGateway
 from app.schemas.payment import PaymentCallbackResult, PaymentInitiateRequest, PaymentInitiateResponse
@@ -65,6 +67,14 @@ async def _parse_payload(request: Request) -> dict:
 
 
 async def _handle_callback(gateway: PaymentGateway, request: Request, db: Session) -> PaymentCallbackResult:
+    # Rate limiting check for payment callbacks
+    client_ip = request.client.host if request.client else "unknown"
+    if check_payment_callback_rate_limit(gateway.value, client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded for payment callbacks",
+        )
+
     payload = await _parse_payload(request)
     try:
         result = payment_service.process_callback(db, gateway, payload)
