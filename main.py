@@ -7,8 +7,10 @@ Architecture:
 - Layer 3: Commerce (Cart, Orders, Payments)
 - Layer 4: Smart Features (Comparison, PC Builder, AI Advisor)
 """
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from core.database import init_db
 from core.routers import auth, catalog, commerce, comparison, pc_builder, advisor, admin
@@ -36,6 +38,11 @@ app.include_router(comparison.router)
 app.include_router(pc_builder.router)
 app.include_router(advisor.router)
 app.include_router(admin.router)
+
+# Serve uploaded files
+uploads_dir = Path(__file__).parent / "uploads"
+uploads_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 
 @app.on_event("startup")

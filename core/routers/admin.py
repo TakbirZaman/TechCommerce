@@ -4,9 +4,12 @@ Admin API Routes
 Protected endpoints for admin management.
 Requires admin authentication (admin@gmail.com / admin123).
 """
+import os
+import uuid
 from datetime import datetime
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, status
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
@@ -400,6 +403,63 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     product.is_active = False
     db.commit()
     return {"message": "Product deactivated"}
+
+
+# Image upload
+UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads" / "products"
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+MAX_SIZE = 5 * 1024 * 1024  # 5MB
+
+
+@router.post("/upload-image")
+async def upload_image(
+    file: UploadFile = File(...),
+    product_id: int | None = None,
+    db: Session = Depends(get_db),
+):
+    """Upload a product image."""
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail=f"File type {file.content_type} not allowed")
+    
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="File too large (max 5MB)")
+    
+    ext = file.filename.split(".")[-1] if "." in (file.filename or "") else "jpg"
+    filename = f"{uuid.uuid4().hex[:12]}.{ext}"
+    filepath = UPLOAD_DIR / filename
+    
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    with open(filepath, "wb") as f:
+        f.write(contents)
+    
+    url = f"/uploads/products/{filename}"
+    
+    # If product_id provided, also create ProductImage record
+    if product_id:
+        product = db.get(Product, product_id)
+        if product:
+            db.add(ProductImage(
+                product_id=product_id,
+                url=url,
+                alt_text=product.name,
+                sort_order=db.query(ProductImage).filter(ProductImage.product_id == product_id).count(),
+                is_primary=not db.query(ProductImage).filter(ProductImage.product_id == product_id, ProductImage.is_primary == True).first(),
+            ))
+            db.commit()
+    
+    return {"url": url, "filename": filename}
+
+
+@router.delete("/images/{image_id}")
+def delete_image(image_id: int, db: Session = Depends(get_db)):
+    """Delete a product image."""
+    image = db.get(ProductImage, image_id)
+    if not image:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+    db.delete(image)
+    db.commit()
+    return {"message": "Image deleted"}
 
 
 # Specification Template management

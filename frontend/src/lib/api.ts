@@ -263,6 +263,33 @@ export const admin = {
   
   deleteProduct: (id: number) => fetchAPI<any>(`/api/v1/admin/products/${id}`, { method: 'DELETE' }),
   
+  uploadImage: async (file: File, productId?: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (productId) formData.append('product_id', String(productId));
+    
+    const headers: Record<string, string> = {};
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE}/api/v1/admin/upload-image`, {
+      method: 'POST',
+      headers,
+      body: formData,
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+    return response.json();
+  },
+  
+  deleteImage: (id: number) => fetchAPI<any>(`/api/v1/admin/images/${id}`, { method: 'DELETE' }),
+  
   orders: (params?: { status?: string; search?: string; page?: number; page_size?: number }) => {
     const searchParams = new URLSearchParams();
     if (params) {

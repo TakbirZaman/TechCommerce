@@ -15,6 +15,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [addingToCart, setAddingToCart] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [selectedImage, setSelectedImage] = useState(0)
 
   useEffect(() => {
     loadProduct()
@@ -113,16 +114,33 @@ export default function ProductDetailPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        {/* Product Image */}
-        <div className="bg-gray-100 rounded-lg overflow-hidden">
-          {product.images?.[0]?.url ? (
-            <img
-              src={product.images[0].url}
-              alt={product.name}
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <div className="w-full h-96 flex items-center justify-center text-6xl">📦</div>
+        {/* Product Image Gallery */}
+        <div>
+          <div className="bg-gray-100 rounded-lg overflow-hidden mb-4">
+            {product.images?.[selectedImage]?.url ? (
+              <img
+                src={product.images[selectedImage].url}
+                alt={product.name}
+                className="w-full h-96 object-contain"
+              />
+            ) : (
+              <div className="w-full h-96 flex items-center justify-center text-6xl">📦</div>
+            )}
+          </div>
+          {product.images && product.images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto">
+              {product.images.map((img: any, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                    selectedImage === idx ? 'border-primary-600' : 'border-transparent'
+                  }`}
+                >
+                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
           )}
         </div>
 

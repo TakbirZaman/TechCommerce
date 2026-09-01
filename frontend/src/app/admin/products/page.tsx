@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { admin, catalog } from '@/lib/api'
-import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Upload } from 'lucide-react'
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([])
@@ -12,6 +12,8 @@ export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -128,6 +130,23 @@ export default function AdminProductsPage() {
       setProducts(prev => prev.filter(p => p.id !== id))
     } catch (error: any) {
       alert(error.message || 'Failed to delete product')
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !editingProduct) return
+    
+    setUploading(true)
+    try {
+      const result = await admin.uploadImage(file, editingProduct.id)
+      setFormData(prev => ({ ...prev, image_url: result.url }))
+      loadData()
+    } catch (error: any) {
+      alert(error.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
@@ -298,9 +317,26 @@ export default function AdminProductsPage() {
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="https://example.com/image.jpg"
                 />
-                {formData.image_url && (
-                  <img src={formData.image_url} alt="Preview" className="mt-2 h-20 w-20 object-cover rounded border" />
-                )}
+                <div className="flex items-center gap-3 mt-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer text-sm"
+                  >
+                    <Upload className="w-4 h-4" />
+                    {uploading ? 'Uploading...' : 'Upload File'}
+                  </label>
+                  {formData.image_url && (
+                    <img src={formData.image_url} alt="Preview" className="h-16 w-16 object-cover rounded border" />
+                  )}
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
