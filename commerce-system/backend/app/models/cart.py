@@ -2,15 +2,12 @@
 Cart models (Branch 2, Section 4-5).
 
 Design notes:
-- One active Cart per user (created lazily on first add-to-cart).
+- One active Cart per session (using session_id for guest users).
 - CartItem does NOT store price. Price is always re-fetched from
   Product.price at read/checkout time so it can never go stale/manipulated.
-  (We *do* snapshot price onto OrderItem later, at order creation — see
-  app/models/order.py — but never on the cart itself.)
-- unique(user_id, product_id) prevents duplicate rows for the same product;
-  adding an already-present product increments quantity instead.
+- unique(session_id, product_id) prevents duplicate rows for the same product.
 """
-from sqlalchemy import ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -21,7 +18,9 @@ class Cart(Base, TimestampMixin):
     __tablename__ = "carts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, index=True)
+    session_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    # user_id is optional - for guest users it's None
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
 
     items: Mapped[list["CartItem"]] = relationship(
         back_populates="cart", cascade="all, delete-orphan", lazy="selectin"

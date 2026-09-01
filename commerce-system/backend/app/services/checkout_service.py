@@ -1,8 +1,8 @@
 """
 Checkout service (Sections 6-10).
 
-Flow:
-  1. Load the user's cart.
+Guest checkout flow:
+  1. Load the cart (using session/cookie).
   2. Re-fetch each product with a row lock (never trust cart-cached price/qty).
   3. Recompute subtotal / discount / delivery_charge / total server-side.
   4. Generate order number, create Order + OrderItem rows (price snapshot).
@@ -10,8 +10,7 @@ Flow:
   6. Move order into PAYMENT_PENDING.
   7. Clear the cart.
 
-Everything happens in one DB transaction: if reservation fails partway
-through, the whole checkout rolls back and no order is left dangling.
+No authentication required - users provide email, phone, name, address.
 """
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -64,8 +63,12 @@ def _calculate_delivery_charge(db: Session, city: str, area: str | None = None) 
     return Decimal("60.00")
 
 
-def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
-    cart = db.execute(select(Cart).where(Cart.user_id == user_id)).scalar_one_or_none()
+def checkout(db: Session, session_id: str, payload: CheckoutRequest) -> Order:
+    """
+    Guest checkout - no authentication required.
+    Users provide email, phone, name, address directly.
+    """
+    cart = db.execute(select(Cart).where(Cart.session_id == session_id)).scalar_one_or_none()
     if cart is None or not cart.items:
         raise EmptyCartError("Cart is empty")
 
@@ -117,7 +120,7 @@ def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
 
     order = Order(
         order_number=order_number,
-        user_id=user_id,
+        user_id=0,  # Guest user
         subtotal=subtotal,
         discount=discount,
         delivery_charge=delivery_charge,
@@ -136,9 +139,7 @@ def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
     db.add(order)
     db.flush()  # assign order.id before reserving/logging
 
-    # Reserve stock for every line item (Section 10). If any single
-    # reservation fails, the exception propagates and the whole
-    # transaction (order + prior reservations) rolls back.
+    # Reserve stock for every line item
     inventory_service.reserve_order_items(db, reservations)
 
     transition_order_status(db, order, OrderStatus.PAYMENT_PENDING)
@@ -147,7 +148,7 @@ def checkout(db: Session, user_id: int, payload: CheckoutRequest) -> Order:
     if payload.discount_code:
         increment_coupon_usage(db, payload.discount_code)
 
-    # Clear the cart now that it has been converted into an order.
+    # Clear the cart
     for item in list(cart.items):
         db.delete(item)
 

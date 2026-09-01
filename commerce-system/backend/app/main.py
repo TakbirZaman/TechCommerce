@@ -2,28 +2,31 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.error_handlers import register_error_handlers
-from app.api.v1.admin_2fa import router as admin_2fa_router
-from app.api.v1.admin_coupons import router as admin_coupons_router
-from app.api.v1.admin_orders import router as admin_orders_router
-from app.api.v1.cart import router as cart_router
-from app.api.v1.checkout import router as checkout_router
-from app.api.v1.invoices import router as invoices_router
-from app.api.v1.orders import router as orders_router
-from app.api.v1.payments import router as payments_router
+from app.api.v1 import (
+    admin_2fa,
+    admin_auth,
+    admin_coupons,
+    admin_orders,
+    cart,
+    checkout,
+    invoices,
+    orders,
+    payments,
+)
 from app.core.config import get_settings
 
 settings = get_settings()
 
 app = FastAPI(
     title="Commerce Service",
-    description="Cart, checkout, order, payment, invoice lifecycle (feature/commerce)",
+    description="Cart, checkout, order, payment, invoice lifecycle",
     version="0.1.0",
 )
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_BASE_URL, "http://localhost:3000"],
+    allow_origins=["*"],  # Restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,14 +35,17 @@ app.add_middleware(
 register_error_handlers(app)
 
 # Mount all routers
-app.include_router(cart_router)
-app.include_router(checkout_router)
-app.include_router(orders_router)
-app.include_router(admin_orders_router)
-app.include_router(payments_router)
-app.include_router(invoices_router)
-app.include_router(admin_coupons_router)
-app.include_router(admin_2fa_router)
+app.include_router(cart.router)
+app.include_router(checkout.router)
+app.include_router(orders.router)
+app.include_router(payments.router)
+app.include_router(invoices.router)
+
+# Admin routes (require authentication)
+app.include_router(admin_auth.router)
+app.include_router(admin_orders.router)
+app.include_router(admin_coupons.router)
+app.include_router(admin_2fa.router)
 
 
 @app.get("/health", tags=["health"])
@@ -49,30 +55,13 @@ def health() -> dict:
 
 @app.on_event("startup")
 def validate_environment():
-    """
-    Validate required environment variables at startup.
-    Fails fast if critical config is missing.
-    """
-    required_fields = [
-        "DATABASE_URL",
-        "JWT_SECRET_KEY",
-        "STORAGE_BUCKET",
-    ]
-
-    missing = []
-    for field in required_fields:
-        value = getattr(settings, field, None)
-        if not value or value == "change-me-in-production":
-            missing.append(field)
-
-    if missing:
-        import logging
-        logger = logging.getLogger("commerce.startup")
-        logger.warning(
-            "Missing or default environment variables: %s. "
-            "Commerce may not function correctly in production.",
-            ", ".join(missing),
-        )
+    """Validate required environment variables at startup."""
+    import logging
+    logger = logging.getLogger("commerce.startup")
+    
+    warnings = settings.validate_required_settings()
+    for warning in warnings:
+        logger.warning(warning)
 
 
 @app.get("/", tags=["root"])
@@ -82,4 +71,5 @@ def root():
         "version": "0.1.0",
         "docs": "/docs",
         "health": "/health",
+        "admin_login": "/api/v1/admin/auth/login",
     }

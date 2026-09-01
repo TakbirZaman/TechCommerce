@@ -7,7 +7,9 @@ from app.models.order import OrderStatus, PaymentMethod, PaymentStatus
 
 
 class DeliveryInfo(BaseModel):
+    """Guest delivery info - no login required."""
     full_name: str = Field(min_length=1, max_length=255)
+    email: str = Field(min_length=5, max_length=255)
     phone: str = Field(min_length=6, max_length=32)
     address: str = Field(min_length=1)
     city: str = Field(min_length=1, max_length=120)
@@ -17,9 +19,8 @@ class DeliveryInfo(BaseModel):
 
 class CheckoutRequest(BaseModel):
     """
-    Client provides ONLY delivery info + payment method choice.
-    No price/discount/total fields exist here — the backend recomputes
-    everything from the user's current cart + server-side rules (Section 6).
+    Guest checkout - no login required.
+    Client provides delivery info + payment method choice.
     """
 
     delivery: DeliveryInfo

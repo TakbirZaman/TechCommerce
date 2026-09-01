@@ -1,18 +1,20 @@
 """
-Admin coupon management endpoints.
+Admin coupon management routes.
+
+Requires admin authentication (admin@gmail.com / admin123).
 """
 from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.admin_auth import require_admin, AdminUser
 from app.core.database import get_db
-from app.core.security import CurrentUser, require_admin
 from app.models.discount import Coupon, DiscountType
 
 router = APIRouter(prefix="/api/v1/admin/coupons", tags=["admin", "coupons"])
@@ -62,10 +64,11 @@ class CouponResponse(BaseModel):
 
 @router.get("", response_model=list[CouponResponse])
 def list_coupons(
+    request: Request,
     db: Session = Depends(get_db),
-    admin: CurrentUser = Depends(require_admin),
+    admin: AdminUser = Depends(require_admin),
 ):
-    """List all coupons."""
+    """List all coupons (admin only)."""
     coupons = db.execute(select(Coupon).order_by(Coupon.created_at.desc())).scalars().all()
     return coupons
 
@@ -73,11 +76,11 @@ def list_coupons(
 @router.post("", response_model=CouponResponse, status_code=status.HTTP_201_CREATED)
 def create_coupon(
     payload: CouponCreate,
+    request: Request,
     db: Session = Depends(get_db),
-    admin: CurrentUser = Depends(require_admin),
+    admin: AdminUser = Depends(require_admin),
 ):
-    """Create a new coupon."""
-    # Check if code already exists
+    """Create a new coupon (admin only)."""
     existing = db.execute(select(Coupon).where(Coupon.code == payload.code.upper())).scalar_one_or_none()
     if existing:
         raise HTTPException(status.HTTP_409_CONFLICT, "Coupon code already exists")
@@ -103,10 +106,11 @@ def create_coupon(
 def update_coupon(
     coupon_id: int,
     payload: CouponUpdate,
+    request: Request,
     db: Session = Depends(get_db),
-    admin: CurrentUser = Depends(require_admin),
+    admin: AdminUser = Depends(require_admin),
 ):
-    """Update an existing coupon."""
+    """Update an existing coupon (admin only)."""
     coupon = db.get(Coupon, coupon_id)
     if not coupon:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
@@ -123,10 +127,11 @@ def update_coupon(
 @router.delete("/{coupon_id}")
 def delete_coupon(
     coupon_id: int,
+    request: Request,
     db: Session = Depends(get_db),
-    admin: CurrentUser = Depends(require_admin),
+    admin: AdminUser = Depends(require_admin),
 ):
-    """Delete a coupon (soft delete by deactivating)."""
+    """Delete a coupon (admin only)."""
     coupon = db.get(Coupon, coupon_id)
     if not coupon:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
@@ -134,31 +139,3 @@ def delete_coupon(
     coupon.is_active = False
     db.commit()
     return {"status": "deactivated"}
-
-
-@router.post("/{coupon_id}/validate")
-def validate_coupon(
-    coupon_id: int,
-    amount: Decimal,
-    db: Session = Depends(get_db),
-    admin: CurrentUser = Depends(require_admin),
-):
-    """Validate a coupon for a given amount (admin check)."""
-    from app.services.discount_service import validate_and_apply_coupon
-
-    coupon = db.get(Coupon, coupon_id)
-    if not coupon:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Coupon not found")
-
-    try:
-        discount = validate_and_apply_coupon(db, coupon.code, amount)
-        return {
-            "valid": True,
-            "discount_amount": discount,
-            "coupon_code": coupon.code,
-        }
-    except Exception as e:
-        return {
-            "valid": False,
-            "error": str(e),
-        }

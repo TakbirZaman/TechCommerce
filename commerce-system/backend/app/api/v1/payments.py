@@ -1,41 +1,43 @@
 """
 Payment API routes.
 
-- POST /api/v1/payments/initiate requires customer auth and re-validates
-  order ownership before calling out to a gateway (IDOR protection).
-- The gateway callback endpoints (/payments/{gateway}/callback) are public
-  by necessity (gateways call them server-to-server / via browser redirect)
-  but every one of them runs through payment_service.process_callback(),
-  which enforces signature/shape checks + idempotency + server-side
-  verification before trusting anything in the payload (Sections 16-17).
-- Rate limiting is applied to callback endpoints to prevent abuse.
+- POST /api/v1/payments/initiate requires order number (no auth).
+- Gateway callbacks are public (gateway calls them server-to-server).
 """
 import json
 
 from fastapi import APIRouter, Depends, Request, HTTPException, status
-
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.exceptions import CommerceError
 from app.core.rate_limiter import check_payment_callback_rate_limit
-from app.core.security import CurrentUser, get_current_user
 from app.models.payment import PaymentGateway
-from app.schemas.payment import PaymentCallbackResult, PaymentInitiateRequest, PaymentInitiateResponse
-from app.services import order_service, payment_service
+from app.schemas.payment import PaymentCallbackResult, PaymentInitiateResponse
+from app.services import payment_service
 
 router = APIRouter(prefix="/api/v1/payments", tags=["payments"])
+
+
+class PaymentInitiateRequest(BaseModel):
+    """Simple payment initiation - just order ID."""
+    order_id: int
 
 
 @router.post("/initiate", response_model=PaymentInitiateResponse)
 def initiate_payment(
     payload: PaymentInitiateRequest,
     db: Session = Depends(get_db),
-    current_user: CurrentUser = Depends(get_current_user),
-) -> PaymentInitiateResponse:
-    # get_order_for_customer enforces ownership — a user can't initiate
-    # payment against someone else's order (IDOR protection, Section 31).
-    order = order_service.get_order_for_customer(db, current_user.id, payload.order_id)
+):
+    """
+    Initiate payment for an order.
+    No auth required - just provide order ID.
+    """
+    from app.models.order import Order
+    order = db.get(Order, payload.order_id)
+    if not order:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
 
     payment = payment_service.initiate_payment_for_order(db, order)
 
@@ -79,9 +81,6 @@ async def _handle_callback(gateway: PaymentGateway, request: Request, db: Sessio
     try:
         result = payment_service.process_callback(db, gateway, payload)
     except CommerceError as exc:
-        # Surface as a normal error response rather than a 500; the
-        # exception handler registered in app/api/error_handlers.py maps
-        # CommerceError subclasses to the right status code.
         raise exc
     return PaymentCallbackResult(**result)
 
@@ -103,7 +102,6 @@ async def sslcommerz_success(request: Request, db: Session = Depends(get_db)) ->
 
 @router.post("/sslcommerz/ipn", response_model=PaymentCallbackResult)
 async def sslcommerz_ipn(request: Request, db: Session = Depends(get_db)) -> PaymentCallbackResult:
-    """IPN is the server-to-server notification SSLCommerz recommends relying on (Section 17)."""
     return await _handle_callback(PaymentGateway.SSLCOMMERZ, request, db)
 
 
