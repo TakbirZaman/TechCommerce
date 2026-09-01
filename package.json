@@ -2,11 +2,11 @@
   "name": "techcommerce",
   "version": "1.0.0",
   "description": "Modern e-commerce platform with AI-powered features",
-  "main": "src/index.js",
+  "private": true,
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "jest"
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run start"
   },
   "keywords": ["ecommerce", "ai", "platform"],
   "license": "MIT"
