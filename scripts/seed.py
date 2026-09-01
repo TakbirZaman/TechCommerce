@@ -485,6 +485,12 @@ def seed():
         db.commit()
         print("[OK] Created delivery zones")
 
+        # ── Extended catalog seeding ──
+        # ~1,000-1,500 real-world products across all 15 categories, spec
+        # templates/options, reviews, coupons and sample orders. Idempotent.
+        from scripts.seed_catalog import seed_catalog
+        seed_catalog(db)
+
         print("\n[DONE] Database seeded successfully!")
         print("   Admin login: admin@gmail.com / admin123")
         print("   Backend API: http://localhost:8000/docs")
