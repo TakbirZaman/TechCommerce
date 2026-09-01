@@ -4,19 +4,21 @@ Admin API Routes
 Protected endpoints for admin management.
 Requires admin authentication (admin@gmail.com / admin123).
 """
+import json
+import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session, joinedload
 
-from core.database import get_db
+from core.database import get_db, SessionLocal
 from core.models.catalog import Brand, Category
-from core.models.commerce import Coupon, DeliveryZone, Order, PaymentStatus, OrderStatus
+from core.models.commerce import Coupon, DeliveryZone, Order, OrderItem, PaymentStatus, OrderStatus
 from core.models.specification import (
     Product,
     ProductImage,
@@ -24,22 +26,110 @@ from core.models.specification import (
     SpecificationTemplate,
     SpecificationOption,
 )
-from core.models.user import User, UserRole
+from core.models.user import AuditLog, User, UserRole
 from core.services.auth_service import hash_password
+from core.services.token_service import verify_token
 
-router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+LOW_STOCK_THRESHOLD = 10
 
 
-# Admin auth check (simple - just check for admin@gmail.com)
-def require_admin(request: Request, db: Session = Depends(get_db)):
-    """Require admin authentication."""
+def get_current_admin_user(request: Request, db: Session = Depends(get_db)) -> User:
+    """Verify the Bearer token and return the authenticated admin User.
+
+    Raises 401 for missing/invalid/expired tokens or unknown users,
+    403 for inactive users or non-admin roles.
+    """
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    
-    # For simplicity, accept any token for admin
-    # In production, validate JWT properly
-    return True
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    payload = verify_token(auth_header[7:])
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user_id = payload.get("user_id")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is inactive",
+        )
+
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required",
+        )
+
+    return user
+
+
+def require_admin(
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_admin_user),
+) -> User:
+    """Router-level guard: every /api/v1/admin endpoint requires a valid admin."""
+    return user
+
+
+def log_audit(
+    request: Request,
+    user: User,
+    action: str,
+    resource: str,
+    resource_id: int | None = None,
+    details: dict | None = None,
+) -> None:
+    """Persist an AuditLog row for a mutating admin action.
+
+    Uses a short-lived dedicated session so the request session (and any ORM
+    objects the endpoint still needs to serialize) is not expired/affected.
+    Best-effort: logging failures must never break the request.
+    """
+    try:
+        with SessionLocal() as audit_db:
+            audit_db.add(AuditLog(
+                user_id=user.id,
+                action=action,
+                resource=resource,
+                resource_id=resource_id,
+                details=json.dumps(details, default=str) if details else None,
+                ip_address=request.client.host if request.client else None,
+            ))
+            audit_db.commit()
+    except Exception:
+        logging.getLogger(__name__).warning(
+            "audit log write failed for %s/%s", resource, action, exc_info=True)
+
+
+router = APIRouter(
+    prefix="/api/v1/admin",
+    tags=["admin"],
+    dependencies=[Depends(require_admin)],  # enforced on EVERY admin endpoint
+)
 
 
 # Schemas
@@ -153,6 +243,140 @@ def get_dashboard(db: Session = Depends(get_db)):
     }
 
 
+@router.get("/analytics")
+def get_analytics(
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
+    """Aggregated analytics for the admin dashboard (last 30 days revenue, etc.)."""
+    now = datetime.now(UTC)
+
+    # Totals
+    total_products = db.query(func.count(Product.id)).scalar() or 0
+    active_products = (
+        db.query(func.count(Product.id)).filter(Product.is_active == True).scalar() or 0  # noqa: E712
+    )
+    total_users = db.query(func.count(User.id)).scalar() or 0
+    total_orders = db.query(func.count(Order.id)).scalar() or 0
+    revenue_total = (
+        db.query(func.sum(Order.total_amount))
+        .filter(Order.payment_status == PaymentStatus.PAID)
+        .scalar()
+        or 0
+    )
+    pending_orders = (
+        db.query(func.count(Order.id))
+        .filter(Order.order_status.in_([OrderStatus.PENDING, OrderStatus.PAYMENT_PENDING]))
+        .scalar()
+        or 0
+    )
+    low_stock_count = (
+        db.query(func.count(Product.id))
+        .filter(Product.is_active == True, Product.stock_quantity <= LOW_STOCK_THRESHOLD)  # noqa: E712
+        .scalar()
+        or 0
+    )
+
+    # Revenue by day (last 30 days, paid orders only) - zero-filled
+    day_start = (now - timedelta(days=29)).replace(hour=0, minute=0, second=0, microsecond=0)
+    revenue_rows = db.query(
+        func.date(Order.created_at).label("day"),
+        func.sum(Order.total_amount).label("revenue"),
+        func.count(Order.id).label("orders"),
+    ).filter(
+        Order.payment_status == PaymentStatus.PAID,
+        Order.created_at >= day_start,
+    ).group_by(func.date(Order.created_at)).all()
+    revenue_map = {
+        str(row.day): {"revenue": float(row.revenue or 0), "orders": int(row.orders or 0)}
+        for row in revenue_rows
+    }
+    revenue_by_day = []
+    for offset in range(29, -1, -1):
+        day = (now - timedelta(days=offset)).date().isoformat()
+        entry = revenue_map.get(day, {"revenue": 0.0, "orders": 0})
+        revenue_by_day.append({"date": day, "revenue": entry["revenue"], "orders": entry["orders"]})
+
+    # Orders grouped by status
+    status_rows = db.query(
+        Order.order_status, func.count(Order.id)
+    ).group_by(Order.order_status).all()
+    orders_by_status = [
+        {
+            "status": s.value if hasattr(s, "value") else str(s),
+            "count": int(count),
+        }
+        for s, count in status_rows
+    ]
+
+    # Top products by units sold (order_items snapshots survive product deletion)
+    top_rows = db.query(
+        OrderItem.product_id.label("product_id"),
+        func.max(OrderItem.product_name).label("name"),
+        func.sum(OrderItem.quantity).label("units"),
+        func.sum(OrderItem.subtotal).label("revenue"),
+    ).group_by(OrderItem.product_id).order_by(desc(func.sum(OrderItem.quantity))).limit(10).all()
+    top_products = [
+        {
+            "product_id": row.product_id,
+            "name": row.name,
+            "units_sold": int(row.units or 0),
+            "revenue": float(row.revenue or 0),
+        }
+        for row in top_rows
+    ]
+
+    # Low stock (active products, ascending stock, top 10)
+    low_stock_products = (
+        db.query(Product)
+        .filter(Product.is_active == True, Product.stock_quantity <= LOW_STOCK_THRESHOLD)  # noqa: E712
+        .order_by(Product.stock_quantity.asc())
+        .limit(10)
+        .all()
+    )
+    low_stock = [
+        {
+            "product_id": p.id,
+            "name": p.name,
+            "sku": p.sku,
+            "stock_quantity": p.stock_quantity,
+        }
+        for p in low_stock_products
+    ]
+
+    # Recent orders (latest 10)
+    recent = db.query(Order).order_by(Order.created_at.desc(), Order.id.desc()).limit(10).all()
+    recent_orders = [
+        {
+            "id": o.id,
+            "order_number": o.order_number,
+            "customer": o.guest_name,
+            "total_amount": float(o.total_amount),
+            "payment_status": o.payment_status.value if hasattr(o.payment_status, "value") else str(o.payment_status),
+            "order_status": o.order_status.value if hasattr(o.order_status, "value") else str(o.order_status),
+            "created_at": (o.created_at.isoformat() + "Z") if o.created_at else None,
+        }
+        for o in recent
+    ]
+
+    return {
+        "totals": {
+            "products": int(total_products),
+            "active_products": int(active_products),
+            "users": int(total_users),
+            "orders": int(total_orders),
+            "revenue_total": float(revenue_total),
+            "pending_orders": int(pending_orders),
+            "low_stock_count": int(low_stock_count),
+        },
+        "revenue_by_day": revenue_by_day,
+        "orders_by_status": orders_by_status,
+        "top_products": top_products,
+        "low_stock": low_stock,
+        "recent_orders": recent_orders,
+    }
+
+
 # Brand management
 @router.get("/brands")
 def list_brands(db: Session = Depends(get_db)):
@@ -161,7 +385,12 @@ def list_brands(db: Session = Depends(get_db)):
 
 
 @router.post("/brands")
-def create_brand(payload: BrandCreateRequest, db: Session = Depends(get_db)):
+def create_brand(
+    payload: BrandCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new brand."""
     existing = db.execute(select(Brand).where(Brand.slug == payload.slug)).scalar_one_or_none()
     if existing:
@@ -171,11 +400,18 @@ def create_brand(payload: BrandCreateRequest, db: Session = Depends(get_db)):
     db.add(brand)
     db.commit()
     db.refresh(brand)
+    log_audit(request, admin_user, "create", "brand", brand.id, {"name": brand.name, "slug": brand.slug})
     return brand
 
 
 @router.put("/brands/{brand_id}")
-def update_brand(brand_id: int, payload: BrandCreateRequest, db: Session = Depends(get_db)):
+def update_brand(
+    brand_id: int,
+    payload: BrandCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update a brand."""
     brand = db.get(Brand, brand_id)
     if not brand:
@@ -185,11 +421,17 @@ def update_brand(brand_id: int, payload: BrandCreateRequest, db: Session = Depen
         setattr(brand, key, value)
     
     db.commit()
+    log_audit(request, admin_user, "update", "brand", brand.id, {"name": brand.name, "slug": brand.slug})
     return brand
 
 
 @router.delete("/brands/{brand_id}")
-def delete_brand(brand_id: int, db: Session = Depends(get_db)):
+def delete_brand(
+    brand_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a brand."""
     brand = db.get(Brand, brand_id)
     if not brand:
@@ -197,6 +439,7 @@ def delete_brand(brand_id: int, db: Session = Depends(get_db)):
     
     brand.is_active = False
     db.commit()
+    log_audit(request, admin_user, "delete", "brand", brand.id, {"name": brand.name, "slug": brand.slug})
     return {"message": "Brand deactivated"}
 
 
@@ -208,7 +451,12 @@ def list_categories(db: Session = Depends(get_db)):
 
 
 @router.post("/categories")
-def create_category(payload: CategoryCreateRequest, db: Session = Depends(get_db)):
+def create_category(
+    payload: CategoryCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new category."""
     existing = db.execute(select(Category).where(Category.slug == payload.slug)).scalar_one_or_none()
     if existing:
@@ -218,11 +466,18 @@ def create_category(payload: CategoryCreateRequest, db: Session = Depends(get_db
     db.add(category)
     db.commit()
     db.refresh(category)
+    log_audit(request, admin_user, "create", "category", category.id, {"name": category.name, "slug": category.slug})
     return category
 
 
 @router.put("/categories/{category_id}")
-def update_category(category_id: int, payload: CategoryCreateRequest, db: Session = Depends(get_db)):
+def update_category(
+    category_id: int,
+    payload: CategoryCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update a category."""
     category = db.get(Category, category_id)
     if not category:
@@ -232,11 +487,17 @@ def update_category(category_id: int, payload: CategoryCreateRequest, db: Sessio
         setattr(category, key, value)
     
     db.commit()
+    log_audit(request, admin_user, "update", "category", category.id, {"name": category.name, "slug": category.slug})
     return category
 
 
 @router.delete("/categories/{category_id}")
-def delete_category(category_id: int, db: Session = Depends(get_db)):
+def delete_category(
+    category_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a category."""
     category = db.get(Category, category_id)
     if not category:
@@ -244,6 +505,7 @@ def delete_category(category_id: int, db: Session = Depends(get_db)):
     
     category.is_active = False
     db.commit()
+    log_audit(request, admin_user, "delete", "category", category.id, {"name": category.name, "slug": category.slug})
     return {"message": "Category deactivated"}
 
 
@@ -277,7 +539,12 @@ def list_products(
 
 
 @router.post("/products")
-def create_product(payload: ProductCreateRequest, db: Session = Depends(get_db)):
+def create_product(
+    payload: ProductCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new product."""
     existing = db.execute(select(Product).where(Product.sku == payload.sku)).scalar_one_or_none()
     if existing:
@@ -317,6 +584,7 @@ def create_product(payload: ProductCreateRequest, db: Session = Depends(get_db))
     
     db.commit()
     db.refresh(product)
+    log_audit(request, admin_user, "create", "product", product.id, {"name": product.name, "sku": product.sku})
     return product
 
 
@@ -341,7 +609,13 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/products/{product_id}")
-def update_product(product_id: int, payload: ProductUpdateRequest, db: Session = Depends(get_db)):
+def update_product(
+    product_id: int,
+    payload: ProductUpdateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update a product."""
     product = db.get(Product, product_id)
     if not product:
@@ -390,11 +664,17 @@ def update_product(product_id: int, payload: ProductUpdateRequest, db: Session =
             db.add(spec)
     
     db.commit()
+    log_audit(request, admin_user, "update", "product", product.id, {"name": product.name, "sku": product.sku})
     return product
 
 
 @router.delete("/products/{product_id}")
-def delete_product(product_id: int, db: Session = Depends(get_db)):
+def delete_product(
+    product_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a product (soft delete)."""
     product = db.get(Product, product_id)
     if not product:
@@ -402,6 +682,7 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     
     product.is_active = False
     db.commit()
+    log_audit(request, admin_user, "delete", "product", product.id, {"name": product.name, "sku": product.sku})
     return {"message": "Product deactivated"}
 
 
@@ -413,9 +694,11 @@ MAX_SIZE = 5 * 1024 * 1024  # 5MB
 
 @router.post("/upload-image")
 async def upload_image(
+    request: Request,
     file: UploadFile = File(...),
     product_id: int | None = None,
     db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
 ):
     """Upload a product image."""
     if file.content_type not in ALLOWED_TYPES:
@@ -425,7 +708,11 @@ async def upload_image(
     if len(contents) > MAX_SIZE:
         raise HTTPException(status_code=400, detail="File too large (max 5MB)")
     
-    ext = file.filename.split(".")[-1] if "." in (file.filename or "") else "jpg"
+    original_name = file.filename or ""
+    ext = original_name.split(".")[-1].lower() if "." in original_name else "jpg"
+    allowed_exts = {t.split("/")[-1] for t in ALLOWED_TYPES}
+    if ext not in allowed_exts:
+        ext = "jpg"
     filename = f"{uuid.uuid4().hex[:12]}.{ext}"
     filepath = UPLOAD_DIR / filename
     
@@ -434,6 +721,7 @@ async def upload_image(
         f.write(contents)
     
     url = f"/uploads/products/{filename}"
+    log_audit(request, admin_user, "create", "product_image", product_id, {"url": url, "filename": filename})
     
     # If product_id provided, also create ProductImage record
     if product_id:
@@ -452,13 +740,20 @@ async def upload_image(
 
 
 @router.delete("/images/{image_id}")
-def delete_image(image_id: int, db: Session = Depends(get_db)):
+def delete_image(
+    image_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a product image."""
     image = db.get(ProductImage, image_id)
     if not image:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+    image_url = image.url
     db.delete(image)
     db.commit()
+    log_audit(request, admin_user, "delete", "product_image", image_id, {"url": image_url})
     return {"message": "Image deleted"}
 
 
@@ -470,7 +765,12 @@ def list_spec_templates(db: Session = Depends(get_db)):
 
 
 @router.post("/spec-templates")
-def create_spec_template(payload: SpecTemplateCreateRequest, db: Session = Depends(get_db)):
+def create_spec_template(
+    payload: SpecTemplateCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create or update specification template for a category."""
     existing = db.execute(
         select(SpecificationTemplate).where(SpecificationTemplate.category_id == payload.category_id)
@@ -479,12 +779,14 @@ def create_spec_template(payload: SpecTemplateCreateRequest, db: Session = Depen
     if existing:
         existing.template = payload.template
         db.commit()
+        log_audit(request, admin_user, "update", "spec_template", existing.id, {"category_id": existing.category_id, "spec_keys": sorted(payload.template.keys())})
         return existing
     
     template = SpecificationTemplate(**payload.model_dump())
     db.add(template)
     db.commit()
     db.refresh(template)
+    log_audit(request, admin_user, "create", "spec_template", template.id, {"category_id": template.category_id, "spec_keys": sorted(payload.template.keys())})
     return template
 
 
@@ -498,12 +800,18 @@ def list_spec_options(template_id: int | None = None, db: Session = Depends(get_
 
 
 @router.post("/spec-options")
-def create_spec_option(payload: SpecOptionCreateRequest, db: Session = Depends(get_db)):
+def create_spec_option(
+    payload: SpecOptionCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a specification option."""
     option = SpecificationOption(**payload.model_dump())
     db.add(option)
     db.commit()
     db.refresh(option)
+    log_audit(request, admin_user, "create", "spec_option", option.id, {"template_id": option.template_id, "spec_key": option.spec_key, "value": option.value})
     return option
 
 
@@ -552,7 +860,13 @@ def get_order(order_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/orders/{order_id}/status")
-def update_order_status(order_id: int, payload: OrderStatusUpdateRequest, db: Session = Depends(get_db)):
+def update_order_status(
+    order_id: int,
+    payload: OrderStatusUpdateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update order status."""
     order = db.get(Order, order_id)
     if not order:
@@ -571,6 +885,7 @@ def update_order_status(order_id: int, payload: OrderStatusUpdateRequest, db: Se
     
     order.order_status = new_status
     db.commit()
+    log_audit(request, admin_user, "update", "order_status", order.id, {"order_number": order.order_number, "from": current_status.value, "to": new_status.value})
     return order
 
 
@@ -582,7 +897,12 @@ def list_coupons(db: Session = Depends(get_db)):
 
 
 @router.post("/coupons")
-def create_coupon(payload: CouponCreateRequest, db: Session = Depends(get_db)):
+def create_coupon(
+    payload: CouponCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new coupon."""
     existing = db.execute(select(Coupon).where(Coupon.code == payload.code.upper())).scalar_one_or_none()
     if existing:
@@ -592,11 +912,18 @@ def create_coupon(payload: CouponCreateRequest, db: Session = Depends(get_db)):
     db.add(coupon)
     db.commit()
     db.refresh(coupon)
+    log_audit(request, admin_user, "create", "coupon", coupon.id, {"code": coupon.code})
     return coupon
 
 
 @router.put("/coupons/{coupon_id}")
-def update_coupon(coupon_id: int, payload: CouponCreateRequest, db: Session = Depends(get_db)):
+def update_coupon(
+    coupon_id: int,
+    payload: CouponCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update a coupon."""
     coupon = db.get(Coupon, coupon_id)
     if not coupon:
@@ -609,11 +936,17 @@ def update_coupon(coupon_id: int, payload: CouponCreateRequest, db: Session = De
             setattr(coupon, key, value)
     
     db.commit()
+    log_audit(request, admin_user, "update", "coupon", coupon.id, {"code": coupon.code})
     return coupon
 
 
 @router.delete("/coupons/{coupon_id}")
-def delete_coupon(coupon_id: int, db: Session = Depends(get_db)):
+def delete_coupon(
+    coupon_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a coupon."""
     coupon = db.get(Coupon, coupon_id)
     if not coupon:
@@ -621,6 +954,7 @@ def delete_coupon(coupon_id: int, db: Session = Depends(get_db)):
     
     coupon.is_active = False
     db.commit()
+    log_audit(request, admin_user, "delete", "coupon", coupon.id, {"code": coupon.code})
     return {"message": "Coupon deactivated"}
 
 
@@ -632,17 +966,29 @@ def list_delivery_zones(db: Session = Depends(get_db)):
 
 
 @router.post("/delivery-zones")
-def create_delivery_zone(payload: DeliveryZoneCreateRequest, db: Session = Depends(get_db)):
+def create_delivery_zone(
+    payload: DeliveryZoneCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new delivery zone."""
     zone = DeliveryZone(**payload.model_dump())
     db.add(zone)
     db.commit()
     db.refresh(zone)
+    log_audit(request, admin_user, "create", "delivery_zone", zone.id, {"city": zone.city, "area": zone.area, "charge": float(zone.charge)})
     return zone
 
 
 @router.put("/delivery-zones/{zone_id}")
-def update_delivery_zone(zone_id: int, payload: DeliveryZoneCreateRequest, db: Session = Depends(get_db)):
+def update_delivery_zone(
+    zone_id: int,
+    payload: DeliveryZoneCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Update a delivery zone."""
     zone = db.get(DeliveryZone, zone_id)
     if not zone:
@@ -652,11 +998,17 @@ def update_delivery_zone(zone_id: int, payload: DeliveryZoneCreateRequest, db: S
         setattr(zone, key, value)
     
     db.commit()
+    log_audit(request, admin_user, "update", "delivery_zone", zone.id, {"city": zone.city, "area": zone.area, "charge": float(zone.charge)})
     return zone
 
 
 @router.delete("/delivery-zones/{zone_id}")
-def delete_delivery_zone(zone_id: int, db: Session = Depends(get_db)):
+def delete_delivery_zone(
+    zone_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Delete a delivery zone."""
     zone = db.get(DeliveryZone, zone_id)
     if not zone:
@@ -664,6 +1016,7 @@ def delete_delivery_zone(zone_id: int, db: Session = Depends(get_db)):
     
     zone.is_active = False
     db.commit()
+    log_audit(request, admin_user, "delete", "delivery_zone", zone.id, {"city": zone.city, "area": zone.area})
     return {"message": "Zone deactivated"}
 
 
@@ -709,7 +1062,12 @@ def list_users(
 
 
 @router.post("/users")
-def create_user(payload: UserCreateRequest, db: Session = Depends(get_db)):
+def create_user(
+    payload: UserCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user),
+):
     """Create a new user."""
     existing = db.execute(select(User).where(User.email == payload.email)).scalar_one_or_none()
     if existing:
@@ -725,4 +1083,15 @@ def create_user(payload: UserCreateRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+    log_audit(request, admin_user, "create", "user", user.id, {"email": user.email, "role": user.role.value if hasattr(user.role, "value") else str(user.role)})
+    # Never serialize credential material (password_hash, reset_token, ...)
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "phone": user.phone,
+        "role": user.role.value if hasattr(user.role, "value") else str(user.role),
+        "is_active": user.is_active,
+        "is_verified": user.is_verified,
+        "created_at": (user.created_at.isoformat() + "Z") if user.created_at else None,
+    }
