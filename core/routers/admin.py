@@ -254,6 +254,7 @@ def list_products(
     query = db.query(Product).options(
         joinedload(Product.brand),
         joinedload(Product.category),
+        joinedload(Product.images),
     )
     
     if search:
@@ -423,6 +424,7 @@ def list_orders(
     page: int = 1,
     page_size: int = 20,
     status: str | None = None,
+    search: str | None = None,
     db: Session = Depends(get_db),
 ):
     """List all orders."""
@@ -431,8 +433,15 @@ def list_orders(
     if status:
         query = query.filter(Order.order_status == status)
     
+    if search:
+        query = query.filter(
+            Order.order_number.ilike(f"%{search}%") |
+            Order.guest_name.ilike(f"%{search}%") |
+            Order.guest_email.ilike(f"%{search}%")
+        )
+    
     total = query.count()
-    orders = query.order_by(Order.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
+    orders = query.options(joinedload(Order.items)).order_by(Order.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
     
     return {
         "orders": orders,
@@ -445,7 +454,9 @@ def list_orders(
 @router.get("/orders/{order_id}")
 def get_order(order_id: int, db: Session = Depends(get_db)):
     """Get order details."""
-    order = db.get(Order, order_id)
+    order = db.execute(
+        select(Order).options(joinedload(Order.items)).where(Order.id == order_id)
+    ).scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     return order
@@ -495,6 +506,23 @@ def create_coupon(payload: CouponCreateRequest, db: Session = Depends(get_db)):
     return coupon
 
 
+@router.put("/coupons/{coupon_id}")
+def update_coupon(coupon_id: int, payload: CouponCreateRequest, db: Session = Depends(get_db)):
+    """Update a coupon."""
+    coupon = db.get(Coupon, coupon_id)
+    if not coupon:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Coupon not found")
+    
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        if key == "code":
+            coupon.code = value.upper()
+        else:
+            setattr(coupon, key, value)
+    
+    db.commit()
+    return coupon
+
+
 @router.delete("/coupons/{coupon_id}")
 def delete_coupon(coupon_id: int, db: Session = Depends(get_db)):
     """Delete a coupon."""
@@ -524,6 +552,20 @@ def create_delivery_zone(payload: DeliveryZoneCreateRequest, db: Session = Depen
     return zone
 
 
+@router.put("/delivery-zones/{zone_id}")
+def update_delivery_zone(zone_id: int, payload: DeliveryZoneCreateRequest, db: Session = Depends(get_db)):
+    """Update a delivery zone."""
+    zone = db.get(DeliveryZone, zone_id)
+    if not zone:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zone not found")
+    
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(zone, key, value)
+    
+    db.commit()
+    return zone
+
+
 @router.delete("/delivery-zones/{zone_id}")
 def delete_delivery_zone(zone_id: int, db: Session = Depends(get_db)):
     """Delete a delivery zone."""
@@ -541,14 +583,36 @@ def delete_delivery_zone(zone_id: int, db: Session = Depends(get_db)):
 def list_users(
     page: int = 1,
     page_size: int = 20,
+    search: str | None = None,
     db: Session = Depends(get_db),
 ):
-    """List all users."""
-    total = db.query(func.count(User.id)).scalar()
-    users = db.query(User).offset((page - 1) * page_size).limit(page_size).all()
+    """List all users (excluding sensitive fields)."""
+    query = db.query(User)
+    
+    if search:
+        query = query.filter(
+            User.full_name.ilike(f"%{search}%") |
+            User.email.ilike(f"%{search}%")
+        )
+    
+    total = query.count()
+    users = query.offset((page - 1) * page_size).limit(page_size).all()
+    
+    # Filter out sensitive fields
+    safe_users = []
+    for u in users:
+        safe_users.append({
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name,
+            "phone": u.phone,
+            "role": u.role.value if hasattr(u.role, 'value') else u.role,
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        })
     
     return {
-        "users": users,
+        "users": safe_users,
         "total": total,
         "page": page,
         "page_size": page_size,

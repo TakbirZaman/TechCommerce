@@ -22,7 +22,7 @@ export default function AdminOrdersPage() {
         status: statusFilter || undefined,
         search: searchQuery || undefined,
       })
-      setOrders(data)
+      setOrders(data.orders || [])
     } catch (error) {
       console.error('Failed to load orders:', error)
     } finally {
@@ -36,12 +36,12 @@ export default function AdminOrdersPage() {
 
   const updateStatus = async (orderId: number, status: string) => {
     try {
-      await admin.updateOrder(orderId, { status })
+      await admin.updateOrder(orderId, { order_status: status })
       setOrders(prev =>
-        prev.map(o => o.id === orderId ? { ...o, status } : o)
+        prev.map(o => o.id === orderId ? { ...o, order_status: status } : o)
       )
       if (selectedOrder?.id === orderId) {
-        setSelectedOrder(prev => ({ ...prev, status }))
+        setSelectedOrder(prev => ({ ...prev, order_status: status }))
       }
     } catch (error: any) {
       alert(error.message || 'Failed to update status')
@@ -134,8 +134,8 @@ export default function AdminOrdersPage() {
                         <td className="p-4">{order.guest_name}</td>
                         <td className="p-4 font-medium">৳{order.total_amount.toLocaleString()}</td>
                         <td className="p-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                            {order.status}
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.order_status)}`}>
+                            {order.order_status}
                           </span>
                         </td>
                         <td className="p-4 text-sm text-gray-500">
@@ -197,7 +197,7 @@ export default function AdminOrdersPage() {
                       key={status}
                       onClick={() => updateStatus(selectedOrder.id, status)}
                       className={`px-3 py-1 rounded text-xs font-medium ${
-                        selectedOrder.status === status
+                        selectedOrder.order_status === status
                           ? getStatusColor(status)
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}

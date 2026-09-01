@@ -247,14 +247,14 @@ export const advisor = {
 export const admin = {
   dashboard: () => fetchAPI<any>('/api/v1/admin/dashboard'),
   
-  products: (params?: { search?: string; limit?: number }) => {
+  products: (params?: { search?: string; page?: number; page_size?: number }) => {
     const searchParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) searchParams.set(key, String(value));
       });
     }
-    return fetchAPI<any[]>(`/api/v1/admin/products?${searchParams.toString()}`);
+    return fetchAPI<{ products: any[]; total: number; page: number; page_size: number }>(`/api/v1/admin/products?${searchParams.toString()}`);
   },
   
   createProduct: (data: any) => fetchAPI<any>('/api/v1/admin/products', { method: 'POST', body: data }),
@@ -263,17 +263,17 @@ export const admin = {
   
   deleteProduct: (id: number) => fetchAPI<any>(`/api/v1/admin/products/${id}`, { method: 'DELETE' }),
   
-  orders: (params?: { status?: string; search?: string; limit?: number }) => {
+  orders: (params?: { status?: string; search?: string; page?: number; page_size?: number }) => {
     const searchParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) searchParams.set(key, String(value));
       });
     }
-    return fetchAPI<any[]>(`/api/v1/admin/orders?${searchParams.toString()}`);
+    return fetchAPI<{ orders: any[]; total: number; page: number; page_size: number }>(`/api/v1/admin/orders?${searchParams.toString()}`);
   },
   
-  updateOrder: (id: number, data: any) => fetchAPI<any>(`/api/v1/admin/orders/${id}`, { method: 'PUT', body: data }),
+  updateOrder: (id: number, data: any) => fetchAPI<any>(`/api/v1/admin/orders/${id}/status`, { method: 'PUT', body: data }),
   
   coupons: () => fetchAPI<any[]>('/api/v1/admin/coupons'),
   
@@ -283,10 +283,14 @@ export const admin = {
   
   deleteCoupon: (id: number) => fetchAPI<any>(`/api/v1/admin/coupons/${id}`, { method: 'DELETE' }),
   
-  users: (params?: { search?: string }) => {
+  users: (params?: { search?: string; page?: number; page_size?: number }) => {
     const searchParams = new URLSearchParams();
-    if (params?.search) searchParams.set('search', params.search);
-    return fetchAPI<any[]>(`/api/v1/admin/users?${searchParams.toString()}`);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) searchParams.set(key, String(value));
+      });
+    }
+    return fetchAPI<{ users: any[]; total: number; page: number; page_size: number }>(`/api/v1/admin/users?${searchParams.toString()}`);
   },
   
   deliveryZones: () => fetchAPI<any[]>('/api/v1/admin/delivery-zones'),

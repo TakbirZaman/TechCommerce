@@ -10,10 +10,10 @@ export default function AdminDeliveryPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingZone, setEditingZone] = useState<any>(null)
   const [formData, setFormData] = useState({
-    name: '',
-    delivery_fee: '',
-    estimated_days: '',
-    is_active: true,
+    city: '',
+    area: '',
+    charge: '',
+    estimated_days: '3',
   })
 
   useEffect(() => {
@@ -33,17 +33,17 @@ export default function AdminDeliveryPage() {
 
   const openCreateModal = () => {
     setEditingZone(null)
-    setFormData({ name: '', delivery_fee: '', estimated_days: '', is_active: true })
+    setFormData({ city: '', area: '', charge: '', estimated_days: '3' })
     setShowModal(true)
   }
 
   const openEditModal = (zone: any) => {
     setEditingZone(zone)
     setFormData({
-      name: zone.name,
-      delivery_fee: zone.delivery_fee.toString(),
+      city: zone.city,
+      area: zone.area || '',
+      charge: zone.charge.toString(),
       estimated_days: zone.estimated_days.toString(),
-      is_active: zone.is_active,
     })
     setShowModal(true)
   }
@@ -52,11 +52,12 @@ export default function AdminDeliveryPage() {
     e.preventDefault()
     try {
       const data = {
-        ...formData,
-        delivery_fee: Number(formData.delivery_fee),
+        city: formData.city,
+        area: formData.area || undefined,
+        charge: Number(formData.charge),
         estimated_days: Number(formData.estimated_days),
       }
-      
+
       if (editingZone) {
         await admin.updateDeliveryZone(editingZone.id, data)
       } else {
@@ -102,9 +103,10 @@ export default function AdminDeliveryPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b text-left text-sm text-gray-600">
-                  <th className="p-4 font-medium">Zone Name</th>
-                  <th className="p-4 font-medium">Delivery Fee</th>
-                  <th className="p-4 font-medium">Est. Days</th>
+                  <th className="p-4 font-medium">City</th>
+                  <th className="p-4 font-medium">Area</th>
+                  <th className="p-4 font-medium">Fee</th>
+                  <th className="p-4 font-medium">Days</th>
                   <th className="p-4 font-medium">Status</th>
                   <th className="p-4 font-medium">Actions</th>
                 </tr>
@@ -112,8 +114,9 @@ export default function AdminDeliveryPage() {
               <tbody>
                 {zones.map((zone) => (
                   <tr key={zone.id} className="border-b last:border-0 hover:bg-gray-50">
-                    <td className="p-4 font-medium">{zone.name}</td>
-                    <td className="p-4">৳{zone.delivery_fee.toLocaleString()}</td>
+                    <td className="p-4 font-medium">{zone.city}</td>
+                    <td className="p-4 text-gray-600">{zone.area || '-'}</td>
+                    <td className="p-4">৳{zone.charge.toLocaleString()}</td>
                     <td className="p-4">{zone.estimated_days} days</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -160,29 +163,39 @@ export default function AdminDeliveryPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Zone Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
                 <input
                   type="text"
                   required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="e.g., Dhaka Metro"
+                  placeholder="e.g., Dhaka"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Area</label>
+                <input
+                  type="text"
+                  value={formData.area}
+                  onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="e.g., Dhanmondi (optional)"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Fee *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fee (৳) *</label>
                   <input
                     type="number"
                     required
-                    value={formData.delivery_fee}
-                    onChange={(e) => setFormData({ ...formData, delivery_fee: e.target.value })}
+                    value={formData.charge}
+                    onChange={(e) => setFormData({ ...formData, charge: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Est. Days *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Days *</label>
                   <input
                     type="number"
                     required
@@ -191,16 +204,6 @@ export default function AdminDeliveryPage() {
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="is_active" className="text-sm font-medium text-gray-700">Active</label>
               </div>
               <div className="flex gap-4 pt-4">
                 <button

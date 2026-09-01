@@ -16,7 +16,7 @@ export default function AdminCustomersPage() {
   const loadUsers = async () => {
     try {
       const data = await admin.users({ search: searchQuery || undefined })
-      setUsers(data)
+      setUsers(data.users || [])
     } catch (error) {
       console.error('Failed to load users:', error)
     } finally {

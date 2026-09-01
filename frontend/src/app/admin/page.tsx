@@ -17,10 +17,10 @@ export default function AdminDashboard() {
     try {
       const [statsData, ordersData] = await Promise.all([
         admin.dashboard(),
-        admin.orders({ limit: 5 }),
+        admin.orders({ page_size: 5 }),
       ])
       setStats(statsData)
-      setRecentOrders(ordersData)
+      setRecentOrders(ordersData.orders || [])
     } catch (error) {
       console.error('Failed to load dashboard:', error)
     } finally {
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const statCards = [
     { label: 'Total Products', value: stats?.total_products || 0, icon: Package, color: 'bg-blue-500' },
     { label: 'Total Orders', value: stats?.total_orders || 0, icon: ShoppingCart, color: 'bg-green-500' },
-    { label: 'Total Customers', value: stats?.total_customers || 0, icon: Users, color: 'bg-purple-500' },
+    { label: 'Total Customers', value: stats?.total_users || 0, icon: Users, color: 'bg-purple-500' },
     { label: 'Total Revenue', value: `৳${(stats?.total_revenue || 0).toLocaleString()}`, icon: DollarSign, color: 'bg-yellow-500' },
   ]
 
@@ -100,11 +100,11 @@ export default function AdminDashboard() {
                     <td className="py-3">৳{order.total_amount.toLocaleString()}</td>
                     <td className="py-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                        order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                        order.order_status === 'delivered' ? 'bg-green-100 text-green-800' :
+                        order.order_status === 'cancelled' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {order.status}
+                        {order.order_status}
                       </span>
                     </td>
                     <td className="py-3 text-sm text-gray-500">

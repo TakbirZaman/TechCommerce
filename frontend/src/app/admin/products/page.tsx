@@ -31,12 +31,12 @@ export default function AdminProductsPage() {
 
   const loadData = async () => {
     try {
-      const [productsData, brandsData, categoriesData] = await Promise.all([
+      const [productsResp, brandsData, categoriesData] = await Promise.all([
         admin.products(),
         catalog.brands(),
         catalog.categories(),
       ])
-      setProducts(productsData)
+      setProducts(productsResp.products || [])
       setBrands(brandsData)
       setCategories(categoriesData)
     } catch (error) {
@@ -53,7 +53,7 @@ export default function AdminProductsPage() {
     }
     try {
       const data = await admin.products({ search: searchQuery })
-      setProducts(data)
+      setProducts(data.products || [])
     } catch (error) {
       console.error('Search failed:', error)
     }

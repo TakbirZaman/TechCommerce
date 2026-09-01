@@ -14,12 +14,11 @@ export default function AdminCouponsPage() {
     description: '',
     discount_type: 'percentage',
     discount_value: '',
-    minimum_order_amount: '',
-    maximum_discount_amount: '',
+    min_order_amount: '',
+    max_discount_amount: '',
     usage_limit: '',
     is_active: true,
-    valid_from: '',
-    valid_until: '',
+    expires_at: '',
   })
 
   useEffect(() => {
@@ -44,29 +43,28 @@ export default function AdminCouponsPage() {
       description: '',
       discount_type: 'percentage',
       discount_value: '',
-      minimum_order_amount: '',
-      maximum_discount_amount: '',
+      min_order_amount: '',
+      max_discount_amount: '',
       usage_limit: '',
       is_active: true,
-      valid_from: '',
-      valid_until: '',
+      expires_at: '',
     })
     setShowModal(true)
   }
 
   const openEditModal = (coupon: any) => {
     setEditingCoupon(coupon)
+    const hasPercent = coupon.discount_percent > 0
     setFormData({
       code: coupon.code,
       description: coupon.description || '',
-      discount_type: coupon.discount_type,
-      discount_value: coupon.discount_value.toString(),
-      minimum_order_amount: coupon.minimum_order_amount?.toString() || '',
-      maximum_discount_amount: coupon.maximum_discount_amount?.toString() || '',
+      discount_type: hasPercent ? 'percentage' : 'fixed',
+      discount_value: hasPercent ? coupon.discount_percent.toString() : (coupon.discount_amount || 0).toString(),
+      min_order_amount: coupon.min_order_amount?.toString() || '',
+      max_discount_amount: coupon.max_discount_amount?.toString() || '',
       usage_limit: coupon.usage_limit?.toString() || '',
       is_active: coupon.is_active,
-      valid_from: coupon.valid_from?.split('T')[0] || '',
-      valid_until: coupon.valid_until?.split('T')[0] || '',
+      expires_at: coupon.expires_at?.split('T')[0] || '',
     })
     setShowModal(true)
   }
@@ -74,14 +72,22 @@ export default function AdminCouponsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const data = {
-        ...formData,
-        discount_value: Number(formData.discount_value),
-        minimum_order_amount: formData.minimum_order_amount ? Number(formData.minimum_order_amount) : undefined,
-        maximum_discount_amount: formData.maximum_discount_amount ? Number(formData.maximum_discount_amount) : undefined,
+      const data: any = {
+        code: formData.code,
+        description: formData.description || undefined,
+        min_order_amount: formData.min_order_amount ? Number(formData.min_order_amount) : 0,
+        max_discount_amount: formData.max_discount_amount ? Number(formData.max_discount_amount) : undefined,
         usage_limit: formData.usage_limit ? Number(formData.usage_limit) : undefined,
+        expires_at: formData.expires_at || undefined,
       }
-      
+      if (formData.discount_type === 'percentage') {
+        data.discount_percent = Number(formData.discount_value)
+        data.discount_amount = 0
+      } else {
+        data.discount_percent = 0
+        data.discount_amount = Number(formData.discount_value)
+      }
+
       if (editingCoupon) {
         await admin.updateCoupon(editingCoupon.id, data)
       } else {
@@ -102,6 +108,12 @@ export default function AdminCouponsPage() {
     } catch (error: any) {
       alert(error.message || 'Failed to delete coupon')
     }
+  }
+
+  const getDiscountDisplay = (coupon: any) => {
+    if (coupon.discount_percent > 0) return `${coupon.discount_percent}%`
+    if (coupon.discount_amount > 0) return `৳${coupon.discount_amount}`
+    return '-'
   }
 
   return (
@@ -131,7 +143,7 @@ export default function AdminCouponsPage() {
                   <th className="p-4 font-medium">Discount</th>
                   <th className="p-4 font-medium">Min Order</th>
                   <th className="p-4 font-medium">Usage</th>
-                  <th className="p-4 font-medium">Valid Until</th>
+                  <th className="p-4 font-medium">Expires</th>
                   <th className="p-4 font-medium">Status</th>
                   <th className="p-4 font-medium">Actions</th>
                 </tr>
@@ -140,20 +152,15 @@ export default function AdminCouponsPage() {
                 {coupons.map((coupon) => (
                   <tr key={coupon.id} className="border-b last:border-0 hover:bg-gray-50">
                     <td className="p-4 font-medium font-mono">{coupon.code}</td>
+                    <td className="p-4">{getDiscountDisplay(coupon)}</td>
                     <td className="p-4">
-                      {coupon.discount_type === 'percentage'
-                        ? `${coupon.discount_value}%`
-                        : `৳${coupon.discount_value}`
-                      }
+                      {coupon.min_order_amount ? `৳${coupon.min_order_amount.toLocaleString()}` : '-'}
                     </td>
                     <td className="p-4">
-                      {coupon.minimum_order_amount ? `৳${coupon.minimum_order_amount.toLocaleString()}` : '-'}
-                    </td>
-                    <td className="p-4">
-                      {coupon.usage_count || 0}/{coupon.usage_limit || '∞'}
+                      {coupon.used_count || 0}/{coupon.usage_limit || '∞'}
                     </td>
                     <td className="p-4 text-sm">
-                      {coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString() : '-'}
+                      {coupon.expires_at ? new Date(coupon.expires_at).toLocaleDateString() : '-'}
                     </td>
                     <td className="p-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -226,8 +233,8 @@ export default function AdminCouponsPage() {
                     onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
-                    <option value="percentage">Percentage</option>
-                    <option value="fixed">Fixed Amount</option>
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Amount (৳)</option>
                   </select>
                 </div>
                 <div>
@@ -246,8 +253,8 @@ export default function AdminCouponsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Order</label>
                   <input
                     type="number"
-                    value={formData.minimum_order_amount}
-                    onChange={(e) => setFormData({ ...formData, minimum_order_amount: e.target.value })}
+                    value={formData.min_order_amount}
+                    onChange={(e) => setFormData({ ...formData, min_order_amount: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
@@ -255,33 +262,22 @@ export default function AdminCouponsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Max Discount</label>
                   <input
                     type="number"
-                    value={formData.maximum_discount_amount}
-                    onChange={(e) => setFormData({ ...formData, maximum_discount_amount: e.target.value })}
+                    value={formData.max_discount_amount}
+                    onChange={(e) => setFormData({ ...formData, max_discount_amount: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Expires At</label>
                   <input
                     type="date"
-                    value={formData.valid_from}
-                    onChange={(e) => setFormData({ ...formData, valid_from: e.target.value })}
+                    value={formData.expires_at}
+                    onChange={(e) => setFormData({ ...formData, expires_at: e.target.value })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label>
-                  <input
-                    type="date"
-                    value={formData.valid_until}
-                    onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Usage Limit</label>
                   <input
@@ -291,17 +287,16 @@ export default function AdminCouponsPage() {
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
-                <div className="flex items-end">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_active}
-                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                      className="rounded"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Active</span>
-                  </label>
-                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  className="rounded"
+                />
+                <label htmlFor="is_active" className="text-sm font-medium text-gray-700">Active</label>
               </div>
               <div className="flex gap-4 pt-4">
                 <button
