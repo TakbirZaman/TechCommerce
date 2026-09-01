@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from core.database import get_db
-from core.models.catalog import Category
+from core.models.catalog import Brand, Category
 from core.models.comparison import Comparison, ComparisonItem, MAX_COMPARISON_ITEMS
 from core.models.specification import Product, SpecificationTemplate
 
@@ -84,6 +84,64 @@ def get_or_create_comparison(db: Session, session_id: str, category_id: int) -> 
 
 
 # Endpoints
+@router.get("/current")
+def get_current_comparison(request: Request, db: Session = Depends(get_db)):
+    """Get current session's active comparison."""
+    session_id = get_session_id(request)
+    
+    comparison = db.execute(
+        select(Comparison).where(Comparison.session_id == session_id).order_by(Comparison.id.desc())
+    ).scalar_one_or_none()
+    
+    if not comparison:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active comparison")
+    
+    # Get category and spec template
+    category = db.get(Category, comparison.category_id)
+    template = db.execute(
+        select(SpecificationTemplate).where(SpecificationTemplate.category_id == comparison.category_id)
+    ).scalar_one_or_none()
+    
+    spec_keys = []
+    spec_labels = {}
+    if template and template.template:
+        for key, meta in template.template.items():
+            spec_keys.append(key)
+            spec_labels[key] = meta.get("label", key)
+    
+    # Build product items matching frontend expected format
+    items_with_products = []
+    for item in comparison.items:
+        product = db.get(Product, item.product_id)
+        if not product:
+            continue
+        
+        product_brand = db.get(Brand, product.brand_id) if product.brand_id else None
+        product_category = db.get(Category, product.category_id) if product.category_id else None
+        
+        items_with_products.append({
+            "id": item.id,
+            "product": {
+                "id": product.id,
+                "name": product.name,
+                "slug": product.slug,
+                "price": float(product.price),
+                "stock_quantity": product.stock_quantity,
+                "images": [{"url": img.url} for img in product.images[:1]],
+                "brand": {"id": product_brand.id, "name": product_brand.name} if product_brand else None,
+                "category": {"id": product_category.id, "name": product_category.name} if product_category else None,
+                "specifications": [{"spec_key": s.spec_key, "value": s.value} for s in product.specifications],
+            },
+        })
+    
+    return {
+        "items": items_with_products,
+        "category": {"id": category.id, "name": category.name} if category else None,
+        "spec_keys": spec_keys,
+        "spec_labels": spec_labels,
+    }
+
+
 @router.get("/sessions", response_model=list[ComparisonSummaryResponse])
 def list_comparisons(request: Request, db: Session = Depends(get_db)):
     """List all comparison sessions for current user."""

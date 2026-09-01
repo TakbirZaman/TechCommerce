@@ -461,6 +461,40 @@ def check_build_compatibility(request: Request, db: Session = Depends(get_db)):
     return check_compatibility(db, build)
 
 
+@router.post("/check-compatibility", response_model=CompatibilityCheckResponse)
+def check_build_compatibility_post(
+    request: Request,
+    payload: dict,
+    db: Session = Depends(get_db),
+):
+    """Check compatibility of provided components."""
+    components = payload.get("components", [])
+    if not components:
+        return CompatibilityCheckResponse(
+            is_compatible=True,
+            issues=[],
+            warnings=[],
+            score=100,
+        )
+    
+    # Create a temporary build-like structure for compatibility check
+    class TempBuild:
+        def __init__(self):
+            self.components = []
+    
+    temp_build = TempBuild()
+    for comp in components:
+        product = db.get(Product, comp.get("product_id"))
+        if product:
+            temp_build.components.append(type('Component', (), {
+                'component_type': comp.get("category"),
+                'product_id': comp.get("product_id"),
+                'product': product,
+            })())
+    
+    return check_compatibility(db, temp_build)
+
+
 @router.get("/suggestions/{component_type}", response_model=list[SuggestedComponentResponse])
 def get_suggestions(
     component_type: str,

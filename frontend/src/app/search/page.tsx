@@ -32,7 +32,7 @@ export default function SearchPage() {
         catalog.autocomplete(q),
       ])
       setResults(products)
-      setSuggestions(autocomplete)
+      setSuggestions(autocomplete.products || [])
     } catch (error) {
       console.error('Search failed:', error)
     } finally {
