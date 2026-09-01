@@ -1,0 +1,18 @@
+# Core ML
+numpy
+pandas
+scikit-learn
+xgboost
+
+# API
+fastapi
+uvicorn[standard]
+pydantic>=2
+
+# Async jobs
+celery
+redis
+
+# Testing
+pytest
+httpx
