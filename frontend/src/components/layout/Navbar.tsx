@@ -64,6 +64,11 @@ export function Navbar() {
               <ShoppingCart className="w-6 h-6" />
             </Link>
 
+            {/* Account */}
+            <Link href="/account" className="text-gray-700 hover:text-primary-600">
+              <User className="w-6 h-6" />
+            </Link>
+
             {/* Admin Link */}
             <Link href="/admin" className="text-gray-500 hover:text-primary-600 text-sm">
               Admin
@@ -136,6 +141,13 @@ export function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Cart
+            </Link>
+            <Link
+              href="/account"
+              className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              My Account
             </Link>
             <Link
               href="/admin"

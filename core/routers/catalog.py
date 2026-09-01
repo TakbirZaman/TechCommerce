@@ -8,7 +8,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from core.database import get_db
@@ -374,3 +374,85 @@ def autocomplete(
         "brands": [{"id": b.id, "name": b.name, "slug": b.slug} for b in brands],
         "categories": [{"id": c.id, "name": c.name, "slug": c.slug} for c in categories],
     }
+
+
+# Product Reviews
+class ReviewCreateRequest(BaseModel):
+    rating: int
+    title: str | None = None
+    comment: str
+    reviewer_name: str
+    reviewer_email: str | None = None
+
+
+@router.get("/products/{product_slug}/reviews")
+def get_product_reviews(product_slug: str, db: Session = Depends(get_db)):
+    """Get reviews for a product."""
+    product = db.execute(
+        select(Product).where(Product.slug == product_slug, Product.is_active == True)
+    ).scalar_one_or_none()
+    
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+    
+    from core.models.specification import ProductReview
+    
+    reviews = db.query(ProductReview).filter(
+        ProductReview.product_id == product.id,
+        ProductReview.is_active == True,
+    ).order_by(ProductReview.created_at.desc()).all()
+    
+    avg_rating = db.query(func.avg(ProductReview.rating)).filter(
+        ProductReview.product_id == product.id,
+        ProductReview.is_active == True,
+    ).scalar() or 0
+    
+    return {
+        "reviews": [
+            {
+                "id": r.id,
+                "rating": r.rating,
+                "title": r.title,
+                "comment": r.comment,
+                "reviewer_name": r.reviewer_name,
+                "is_verified": r.is_verified,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in reviews
+        ],
+        "average_rating": round(float(avg_rating), 1),
+        "total_reviews": len(reviews),
+    }
+
+
+@router.post("/products/{product_slug}/reviews")
+def create_product_review(
+    product_slug: str,
+    payload: ReviewCreateRequest,
+    db: Session = Depends(get_db),
+):
+    """Create a review for a product."""
+    if payload.rating < 1 or payload.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    product = db.execute(
+        select(Product).where(Product.slug == product_slug, Product.is_active == True)
+    ).scalar_one_or_none()
+    
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+    
+    from core.models.specification import ProductReview
+    
+    review = ProductReview(
+        product_id=product.id,
+        reviewer_name=payload.reviewer_name,
+        reviewer_email=payload.reviewer_email,
+        rating=payload.rating,
+        title=payload.title,
+        comment=payload.comment,
+    )
+    db.add(review)
+    db.commit()
+    
+    return {"message": "Review submitted successfully", "id": review.id}

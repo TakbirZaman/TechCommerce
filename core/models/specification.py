@@ -141,6 +141,7 @@ class Product(Base):
     category: Mapped["Category"] = relationship(back_populates="products")
     images: Mapped[list["ProductImage"]] = relationship(back_populates="product", cascade="all, delete-orphan")
     specifications: Mapped[list["ProductSpecification"]] = relationship(back_populates="product", cascade="all, delete-orphan")
+    reviews: Mapped[list["ProductReview"]] = relationship(back_populates="product", cascade="all, delete-orphan")
 
     @property
     def available_stock(self) -> int:
@@ -200,3 +201,23 @@ class ProductSpecification(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     product: Mapped["Product"] = relationship(back_populates="specifications")
+
+
+class ProductReview(Base):
+    """Product reviews and ratings."""
+    __tablename__ = "product_reviews"
+    __table_args__ = {"schema": None}
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    reviewer_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    reviewer_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5
+    title: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    comment: Mapped[str] = mapped_column(Text, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    product: Mapped["Product"] = relationship(back_populates="reviews")

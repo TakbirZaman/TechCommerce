@@ -133,6 +133,14 @@ export const catalog = {
   
   autocomplete: (q: string) =>
     fetchAPI<any>(`/api/v1/catalog/autocomplete?q=${encodeURIComponent(q)}`),
+  
+  productReviews: (slug: string) =>
+    fetchAPI<{ reviews: any[]; average_rating: number; total_reviews: number }>(
+      `/api/v1/catalog/products/${slug}/reviews`
+    ),
+  
+  createReview: (slug: string, data: { rating: number; title?: string; comment: string; reviewer_name: string; reviewer_email?: string }) =>
+    fetchAPI<any>(`/api/v1/catalog/products/${slug}/reviews`, { method: 'POST', body: data }),
 };
 
 // Commerce API
