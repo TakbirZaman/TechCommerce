@@ -4,6 +4,14 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
+export interface ScoredProduct {
+  product_id: string;
+  score: number;
+  reasons: string[];
+  tradeoffs: string[];
+  component_scores: Record<string, number>;
+}
+
 interface RequestOptions {
   method?: string;
   headers?: Record<string, string>;

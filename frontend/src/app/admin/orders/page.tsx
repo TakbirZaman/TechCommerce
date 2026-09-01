@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
         prev.map(o => o.id === orderId ? { ...o, order_status: status } : o)
       )
       if (selectedOrder?.id === orderId) {
-        setSelectedOrder(prev => ({ ...prev, order_status: status }))
+        setSelectedOrder((prev: any) => ({ ...prev, order_status: status }))
       }
     } catch (error: any) {
       alert(error.message || 'Failed to update status')

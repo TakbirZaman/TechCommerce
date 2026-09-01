@@ -94,11 +94,11 @@ export default function ComparePage() {
   }
 
   // Get all unique spec keys
-  const allSpecKeys = [...new Set(
+  const allSpecKeys = Array.from(new Set(
     items.flatMap(item => 
       item.product?.specifications?.map((s: any) => s.spec_key) || []
     )
-  )]
+  ))
 
   // Build spec lookup for each product
   const specsByProduct = items.map(item => {

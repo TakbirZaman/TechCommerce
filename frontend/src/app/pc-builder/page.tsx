@@ -72,7 +72,7 @@ export default function PCBuilderPage() {
     setSelectedCategory(category)
     setLoadingProducts(true)
     try {
-      const data = await catalog.products({ category, limit: 50 })
+      const data = await catalog.products({ category, page_size: 50 })
       setProducts(data)
     } catch (error) {
       console.error('Failed to load products:', error)
