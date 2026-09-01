@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Search, Cpu, BarChart3, Shield, Truck } from 'lucide-react'
+import { Search, Cpu, BarChart3, Shield, Truck, Star, Zap, Monitor } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -102,7 +102,7 @@ export default function HomePage() {
             <p className="mt-2 text-gray-600">Find exactly what you're looking for</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             <Link href="/products?category=laptops" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
                 <div className="text-4xl mb-4">💻</div>
@@ -127,11 +127,59 @@ export default function HomePage() {
               </div>
             </Link>
 
-            <Link href="/products?category=components" className="group">
+            <Link href="/products?category=processors" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">⚡</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Processors</h3>
+                <p className="text-sm text-gray-500 mt-1">Intel & AMD CPUs</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=graphics-cards" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">🎮</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Graphics Cards</h3>
+                <p className="text-sm text-gray-500 mt-1">NVIDIA & AMD GPUs</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=ram" className="group">
               <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
                 <div className="text-4xl mb-4">🔧</div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Components</h3>
-                <p className="text-sm text-gray-500 mt-1">CPU, GPU, RAM, Storage</p>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">RAM</h3>
+                <p className="text-sm text-gray-500 mt-1">DDR4 & DDR5 Memory</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=storage" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">💾</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Storage</h3>
+                <p className="text-sm text-gray-500 mt-1">SSD & NVMe Drives</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=motherboards" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">🏗️</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Motherboards</h3>
+                <p className="text-sm text-gray-500 mt-1">ATX, Micro-ATX, Mini</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=tablets" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">📋</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Tablets</h3>
+                <p className="text-sm text-gray-500 mt-1">iPad & Android Tablets</p>
+              </div>
+            </Link>
+
+            <Link href="/products?category=headsets" className="group">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">🎧</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Headsets</h3>
+                <p className="text-sm text-gray-500 mt-1">Gaming & Audio</p>
               </div>
             </Link>
           </div>
@@ -146,12 +194,20 @@ export default function HomePage() {
             Use our PC Builder tool to configure your perfect setup. 
             Get real-time compatibility checks and price calculations.
           </p>
-          <Link
-            href="/pc-builder"
-            className="inline-block bg-white text-primary-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            Start Building →
-          </Link>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/pc-builder"
+              className="inline-block bg-white text-primary-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Start Building →
+            </Link>
+            <Link
+              href="/products"
+              className="inline-block border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white hover:text-primary-600 transition-colors"
+            >
+              Browse All Products
+            </Link>
+          </div>
         </div>
       </section>
     </div>
