@@ -219,7 +219,7 @@ def generate_order_number(db: Session, year: int) -> str:
     """Generate unique order number."""
     prefix = f"TC{year}"
     last_order = db.execute(
-        select(Order).where(Order.order_number.like(f"{prefix}%")).order_by(Order.id.desc())
+        select(Order).where(Order.order_number.like(f"{prefix}%")).order_by(Order.id.desc()).limit(1)
     ).scalar_one_or_none()
     
     if last_order:
