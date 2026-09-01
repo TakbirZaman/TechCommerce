@@ -22,6 +22,7 @@ export default function AdminProductsPage() {
     stock_quantity: '',
     brand_id: '',
     category_id: '',
+    image_url: '',
     is_active: true,
   })
 
@@ -71,6 +72,7 @@ export default function AdminProductsPage() {
       stock_quantity: '',
       brand_id: '',
       category_id: '',
+      image_url: '',
       is_active: true,
     })
     setShowModal(true)
@@ -78,6 +80,7 @@ export default function AdminProductsPage() {
 
   const openEditModal = (product: any) => {
     setEditingProduct(product)
+    const primaryImage = product.images?.find((img: any) => img.is_primary) || product.images?.[0]
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -88,6 +91,7 @@ export default function AdminProductsPage() {
       stock_quantity: product.stock_quantity.toString(),
       brand_id: product.brand_id?.toString() || '',
       category_id: product.category_id?.toString() || '',
+      image_url: primaryImage?.url || '',
       is_active: product.is_active,
     })
     setShowModal(true)
@@ -284,6 +288,19 @@ export default function AdminProductsPage() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                <input
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+                {formData.image_url && (
+                  <img src={formData.image_url} alt="Preview" className="mt-2 h-20 w-20 object-cover rounded border" />
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

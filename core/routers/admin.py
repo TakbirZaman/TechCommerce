@@ -67,6 +67,7 @@ class ProductCreateRequest(BaseModel):
     stock_quantity: int = 0
     is_active: bool = True
     is_featured: bool = False
+    image_url: str | None = None
     specifications: dict = {}
 
 
@@ -78,6 +79,7 @@ class ProductUpdateRequest(BaseModel):
     stock_quantity: int | None = None
     is_active: bool | None = None
     is_featured: bool | None = None
+    image_url: str | None = None
     specifications: dict | None = None
 
 
@@ -279,10 +281,20 @@ def create_product(payload: ProductCreateRequest, db: Session = Depends(get_db))
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="SKU already exists")
     
     # Create product
-    product_data = payload.model_dump(exclude={"specifications"})
+    product_data = payload.model_dump(exclude={"specifications", "image_url"})
     product = Product(**product_data)
     db.add(product)
     db.flush()
+    
+    # Add primary image if provided
+    if payload.image_url:
+        db.add(ProductImage(
+            product_id=product.id,
+            url=payload.image_url,
+            alt_text=payload.name,
+            sort_order=0,
+            is_primary=True,
+        ))
     
     # Add specifications
     for spec_key, spec_value in payload.specifications.items():
@@ -333,8 +345,25 @@ def update_product(product_id: int, payload: ProductUpdateRequest, db: Session =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     
     # Update basic fields
-    for key, value in payload.model_dump(exclude={"specifications"}, exclude_unset=True).items():
+    for key, value in payload.model_dump(exclude={"specifications", "image_url"}, exclude_unset=True).items():
         setattr(product, key, value)
+    
+    # Update primary image if provided
+    if payload.image_url is not None:
+        existing_image = db.query(ProductImage).filter(
+            ProductImage.product_id == product_id,
+            ProductImage.is_primary == True,
+        ).first()
+        if existing_image:
+            existing_image.url = payload.image_url
+        else:
+            db.add(ProductImage(
+                product_id=product.id,
+                url=payload.image_url,
+                alt_text=product.name,
+                sort_order=0,
+                is_primary=True,
+            ))
     
     # Update specifications
     if payload.specifications is not None:

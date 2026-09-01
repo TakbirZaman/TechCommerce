@@ -338,6 +338,47 @@ def generate_sample_products(db, brand_slug: str, category_slug: str, count: int
             {"name": "NVIDIA GeForce RTX 4060 Ti", "brand": "nvidia", "price": 399, "specs": {"tdp": "160", "benchmark_score": "28000"}},
             {"name": "AMD Radeon RX 7900 XTX", "brand": "amd", "price": 949, "specs": {"tdp": "355", "benchmark_score": "38000"}},
         ],
+        "ram": [
+            {"name": "Corsair Vengeance DDR5 32GB 6000MHz", "brand": "corsair", "price": 119, "specs": {"capacity_gb": "32", "speed_mhz": "6000", "type": "DDR5", "cas_latency": "36"}},
+            {"name": "Kingston Fury Beast DDR5 16GB 5200MHz", "brand": "kingston", "price": 59, "specs": {"capacity_gb": "16", "speed_mhz": "5200", "type": "DDR5", "cas_latency": "40"}},
+            {"name": "Corsair Dominator DDR5 64GB 6400MHz", "brand": "corsair", "price": 279, "specs": {"capacity_gb": "64", "speed_mhz": "6400", "type": "DDR5", "cas_latency": "32"}},
+            {"name": "Kingston Fury Beast DDR4 32GB 3200MHz", "brand": "kingston", "price": 69, "specs": {"capacity_gb": "32", "speed_mhz": "3200", "type": "DDR4", "cas_latency": "16"}},
+        ],
+        "storage": [
+            {"name": "Samsung 990 Pro 2TB NVMe SSD", "brand": "samsung", "price": 189, "specs": {"capacity_gb": "2048", "interface": "PCIe 4.0 NVMe", "read_speed": "7450", "write_speed": "6900", "type": "SSD"}},
+            {"name": "WD Black SN850X 1TB NVMe SSD", "brand": "western-digital", "price": 99, "specs": {"capacity_gb": "1024", "interface": "PCIe 4.0 NVMe", "read_speed": "7300", "write_speed": "6300", "type": "SSD"}},
+            {"name": "Samsung 870 EVO 1TB SATA SSD", "brand": "samsung", "price": 89, "specs": {"capacity_gb": "1024", "interface": "SATA III", "read_speed": "560", "write_speed": "530", "type": "SSD"}},
+            {"name": "Kingston NV2 2TB NVMe SSD", "brand": "kingston", "price": 109, "specs": {"capacity_gb": "2048", "interface": "PCIe 4.0 NVMe", "read_speed": "3500", "write_speed": "2800", "type": "SSD"}},
+        ],
+        "motherboards": [
+            {"name": "ASUS ROG Strix Z790-E Gaming WiFi", "brand": "asus", "price": 379, "specs": {"socket": "LGA 1700", "chipset": "Z790", "form_factor": "ATX", "memory_slots": "4", "max_memory_gb": "128", "wifi": "WiFi 6E"}},
+            {"name": "MSI MAG B650 Tomahawk WiFi", "brand": "msi", "price": 229, "specs": {"socket": "AM5", "chipset": "B650", "form_factor": "ATX", "memory_slots": "4", "max_memory_gb": "128", "wifi": "WiFi 6E"}},
+            {"name": "Gigabyte B760 Aorus Elite AX", "brand": "gigabyte", "price": 189, "specs": {"socket": "LGA 1700", "chipset": "B760", "form_factor": "ATX", "memory_slots": "4", "max_memory_gb": "128", "wifi": "WiFi 6E"}},
+        ],
+        "power-supplies": [
+            {"name": "Corsair RM850x 850W 80+ Gold", "brand": "corsair", "price": 149, "specs": {"wattage": "850", "efficiency": "80+ Gold", "modular": "Full", "fan_size": "135mm"}},
+            {"name": "Corsair RM1000x 1000W 80+ Gold", "brand": "corsair", "price": 189, "specs": {"wattage": "1000", "efficiency": "80+ Gold", "modular": "Full", "fan_size": "135mm"}},
+        ],
+        "cases": [
+            {"name": "Corsair 4000D Airflow", "brand": "corsair", "price": 104, "specs": {"type": "Mid Tower", "motherboard_support": "ATX", "max_gpu_length": "360", "max_cpu_cooler_height": "170"}},
+            {"name": "NZXT H7 Flow", "brand": "corsair", "price": 129, "specs": {"type": "Mid Tower", "motherboard_support": "ATX", "max_gpu_length": "400", "max_cpu_cooler_height": "185"}},
+        ],
+        "keyboards": [
+            {"name": "Corsair K100 RGB Mechanical", "brand": "corsair", "price": 229, "specs": {"switch_type": "Cherry MX Speed", "layout": "Full", "backlight": "RGB", "connection": "Wired"}},
+            {"name": "Logitech MX Keys S", "brand": "logitech", "price": 109, "specs": {"switch_type": "Membrane", "layout": "Full", "backlight": "White LED", "connection": "Wireless"}},
+        ],
+        "mice": [
+            {"name": "Logitech MX Master 3S", "brand": "logitech", "price": 99, "specs": {"sensor": "Darkfield", "dpi": "8000", "buttons": "7", "connection": "Wireless", "weight_g": "141"}},
+            {"name": "Corsair M65 RGB Ultra", "brand": "corsair", "price": 79, "specs": {"sensor": "PMW3391", "dpi": "26000", "buttons": "8", "connection": "Wired", "weight_g": "97"}},
+        ],
+        "headsets": [
+            {"name": "Corsair HS80 RGB Wireless", "brand": "corsair", "price": 149, "specs": {"driver_size": "50", "frequency_response": "20Hz-40kHz", "microphone": "Omnidirectional", "connection": "Wireless", "battery_hours": "20"}},
+            {"name": "Logitech G Pro X 2", "brand": "logitech", "price": 249, "specs": {"driver_size": "50", "frequency_response": "20Hz-20kHz", "microphone": "Detachable Boom", "connection": "Wireless", "battery_hours": "50"}},
+        ],
+        "tablets": [
+            {"name": "Apple iPad Pro 12.9-inch M2", "brand": "apple", "price": 1099, "specs": {"chipset": "Apple M2", "storage_gb": "256", "display_size": "12.9", "display_resolution": "2732 x 2048", "apple_pencil": "2nd Gen", "os": "iPadOS"}},
+            {"name": "Samsung Galaxy Tab S9 Ultra", "brand": "samsung", "price": 1199, "specs": {"chipset": "Snapdragon 8 Gen 2", "storage_gb": "256", "display_size": "14.6", "display_resolution": "2960 x 1848", "refresh_rate": "120", "os": "Android 14"}},
+        ],
     }
 
     products = sample_data.get(category_slug, [])
@@ -411,7 +452,7 @@ def main():
             print("[INFO] No ICECAT_API_KEY found. Generating sample products...")
             print("[INFO] Set ICECAT_API_KEY env var to use real Icecat data.\n")
 
-            categories = ["laptops", "phones", "monitors", "processors", "graphics-cards"]
+            categories = ["laptops", "phones", "monitors", "processors", "graphics-cards", "ram", "storage", "motherboards", "power-supplies", "cases", "keyboards", "mice", "headsets", "tablets"]
             total = 0
 
             for cat in categories:
