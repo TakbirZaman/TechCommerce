@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://techcommerce-api.onrender.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://techcommerce-api.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://techcommerce-api.onrender.com/health"
+    }
+  ]
+}

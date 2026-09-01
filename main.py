@@ -7,6 +7,7 @@ Architecture:
 - Layer 3: Commerce (Cart, Orders, Payments)
 - Layer 4: Smart Features (Comparison, PC Builder, AI Advisor)
 """
+import os
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,10 +22,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
+    allow_origins=[FRONTEND_URL, "http://localhost:3000", "https://*.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,8 +50,17 @@ app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 @app.on_event("startup")
 def startup():
-    """Initialize database on startup."""
     init_db()
+    # Auto-seed if DB is empty
+    from core.database import SessionLocal
+    from core.models.user import User
+    db = SessionLocal()
+    try:
+        if db.query(User).count() == 0:
+            from scripts.seed import seed
+            seed()
+    finally:
+        db.close()
 
 
 @app.get("/")
