@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { catalog, type AISearchResponse } from '@/lib/api'
+import { catalog, assetUrl, type AISearchResponse } from '@/lib/api'
 import { Search as SearchIcon, Sparkles } from 'lucide-react'
 import { HoverLift, Stagger, StaggerItem } from '@/components/motion'
 import InterpretationChips from '@/components/search/InterpretationChips'
@@ -56,7 +56,7 @@ function ProductCard({
         <div className="relative h-48 bg-gray-100 overflow-hidden flex items-center justify-center">
           {product.images?.[0]?.url ? (
             <img
-              src={product.images[0].url}
+              src={assetUrl(product.images[0].url)}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-110"
             />

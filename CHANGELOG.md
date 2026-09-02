@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `render.yaml`: `JWT_SECRET_KEY` now generated at deploy; local dev logs a warning when the default secret is used.
 
 ### Fixed
+- Dev environment: Next.js rewrites proxy failed intermittently (`path-to-regexp` treats the `:8000` port in the rewrite destination as a route param → 500s under browser-level parallelism). Browser now calls the API directly (`NEXT_PUBLIC_API_URL` in committed `frontend/.env.development`); images resolve via new `assetUrl()` helper across all pages.
+- Admin panel: `/admin/login` was wrapped by the admin layout's auth guard → infinite `/admin/login` redirect loop (login form could never render). Guard now exempts the login page and renders it without admin chrome.
+- Products listing: passes proper filter object to the API (`page`/`page_size` included — a string was being char-indexed by `Object.entries`) and gained working Previous/Next pagination (was: only first 24 products, no way forward).
 - `scripts/scrape_bd.py` `unique_slug` infinite loop (fallback checked the wrong variable).
 - `POST /api/v1/admin/users` no longer returns `password_hash`/`reset_token` (safe field whitelist).
 - 2 orphaned `order_items` FK violations repaired; all 4,217 slugs/SKUs unique; `PRAGMA foreign_key_check` clean.

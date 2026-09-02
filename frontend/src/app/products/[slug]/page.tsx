@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { catalog, commerce, compare } from '@/lib/api'
+import { catalog, commerce, compare, assetUrl } from '@/lib/api'
 import { ShoppingCart, GitCompare, Heart, Share2, Star, Truck, ChevronRight, MessageSquare, CheckCircle2, XCircle } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { FadeIn, Stagger, StaggerItem } from '@/components/motion'
@@ -165,7 +165,7 @@ export default function ProductDetailPage() {
             <div className="group relative bg-gray-100 rounded-2xl overflow-hidden mb-4 ring-1 ring-gray-900/5">
               {product.images?.[selectedImage]?.url ? (
                 <img
-                  src={product.images[selectedImage].url}
+                  src={assetUrl(product.images[selectedImage].url)}
                   alt={product.name}
                   className="w-full h-96 object-contain transition-transform duration-500 ease-out-expo group-hover:scale-110"
                 />
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
                         : 'border-transparent hover:border-primary-300'
                     }`}
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <img src={assetUrl(img.url)} alt="" className="w-full h-full object-cover" />
                   </motion.button>
                 ))}
               </div>

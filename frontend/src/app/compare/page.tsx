@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { compare } from '@/lib/api'
+import { compare, assetUrl } from '@/lib/api'
 import { GitCompare, Trash2, ArrowLeft } from 'lucide-react'
 
 export default function ComparePage() {
@@ -156,7 +156,7 @@ export default function ComparePage() {
                       <Link href={`/products/${item.product?.slug}`}>
                         <div className="w-20 h-20 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
                           {item.product?.images?.[0]?.url ? (
-                            <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={assetUrl(item.product.images[0].url)} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
                           ) : (
                             <span className="text-2xl">📦</span>
                           )}

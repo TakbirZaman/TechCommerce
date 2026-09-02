@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { advisor } from '@/lib/api'
+import { advisor, assetUrl } from '@/lib/api'
 import { Send, Sparkles, TrendingUp, RefreshCw } from 'lucide-react'
 
 export default function AdvisorPage() {
@@ -186,7 +186,7 @@ export default function AdvisorPage() {
               >
                 <div className="h-32 bg-gray-100 flex items-center justify-center">
                   {product.images?.[0]?.url ? (
-                    <img src={product.images[0].url} alt={product.name} className="h-full w-full object-cover" />
+                    <img src={assetUrl(product.images[0].url)} alt={product.name} className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-3xl">📦</span>
                   )}

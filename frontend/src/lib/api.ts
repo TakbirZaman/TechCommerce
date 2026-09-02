@@ -4,6 +4,17 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
+/**
+ * Resolve a backend-relative asset path (e.g. /uploads/products/x.svg)
+ * against the API base so images load when the frontend and API run on
+ * different origins (direct browser→API calls, no dev proxy involved).
+ */
+export const assetUrl = (path?: string | null): string => {
+  if (!path) return ''
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  return `${API_BASE}${path}`
+}
+
 export interface ScoredProduct {
   product_id: string;
   score: number;

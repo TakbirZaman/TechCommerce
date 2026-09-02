@@ -23,3 +23,6 @@ scripts/.scrape_cache/
 # Build artifacts
 *.pyc
 __pycache__/
+
+# Local env overrides (machine-specific, never commit)
+.env*.local

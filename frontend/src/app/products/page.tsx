@@ -3,17 +3,20 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { catalog } from '@/lib/api'
+import { assetUrl, catalog } from '@/lib/api'
 import { Filter, ChevronDown, PackageSearch, SlidersHorizontal } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FadeIn, Stagger, StaggerItem } from '@/components/motion'
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
+  const PAGE_SIZE = 24
   const [products, setProducts] = useState<any[]>([])
   const [brands, setBrands] = useState<any[]>([])
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
     brand: searchParams.get('brand') || '',
@@ -25,7 +28,8 @@ export default function ProductsPage() {
 
   useEffect(() => {
     loadData()
-  }, [filters])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, page])
 
   const loadData = async () => {
     setLoading(true)
@@ -37,11 +41,14 @@ export default function ProductsPage() {
           min_price: filters.min_price ? Number(filters.min_price) : undefined,
           max_price: filters.max_price ? Number(filters.max_price) : undefined,
           sort: filters.sort,
+          page,
+          page_size: PAGE_SIZE,
         }),
         catalog.brands(),
         catalog.categories(),
       ])
       setProducts(productsData)
+      setHasMore((productsData?.length || 0) >= PAGE_SIZE)
       setBrands(brandsData)
       setCategories(categoriesData)
     } catch (error) {
@@ -52,6 +59,7 @@ export default function ProductsPage() {
   }
 
   const handleFilterChange = (key: string, value: string) => {
+    setPage(1)
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
@@ -215,7 +223,7 @@ export default function ProductsPage() {
                     <div className="h-48 bg-gray-100 overflow-hidden flex items-center justify-center">
                       {product.images?.[0]?.url ? (
                         <img
-                          src={product.images[0].url}
+                          src={assetUrl(product.images[0].url)}
                           alt={product.name}
                           className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-110"
                         />
@@ -254,6 +262,29 @@ export default function ProductsPage() {
                 </StaggerItem>
               ))}
             </Stagger>
+          )}
+
+          {/* Pagination */}
+          {!loading && products.length > 0 && (
+            <div className="mt-10 flex items-center justify-center gap-3">
+              <button
+                onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                disabled={page === 1}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-sm text-gray-600">
+                Page <span className="font-semibold text-gray-900">{page}</span>
+              </span>
+              <button
+                onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                disabled={!hasMore}
+                className="px-4 py-2 rounded-lg border border-primary-300 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
       </div>
