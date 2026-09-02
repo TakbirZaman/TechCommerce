@@ -120,6 +120,12 @@ export function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} TechCommerce. All rights reserved.</p>
+          <p className="mt-2">
+            Developed by{' '}
+            <a href="https://www.linkedin.com/in/takbir-zaman-bhuiyan/" target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 transition-colors">Takbir Zaman</a>
+            {' & '}
+            <a href="https://www.linkedin.com/in/ibrar-amin/" target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 transition-colors">Ibrar Amin</a>
+          </p>
         </div>
       </div>
     </footer>
