@@ -16,6 +16,13 @@ __pycache__/
 frontend/.next/
 frontend/out/
 
+# Scraper response cache + session state
+scripts/.scrape_cache/
+.opencode/
+
 # Build artifacts
 *.pyc
 __pycache__/
+
+# Local env overrides (machine-specific, never commit)
+.env*.local

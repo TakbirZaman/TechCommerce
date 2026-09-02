@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { commerce } from '@/lib/api'
+import { commerce, assetUrl } from '@/lib/api'
 import { CreditCard, Truck, CheckCircle } from 'lucide-react'
 
 export default function CheckoutPage() {
@@ -266,7 +266,7 @@ export default function CheckoutPage() {
                 <div key={item.id} className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gray-100 rounded flex-shrink-0">
                     {item.image_url ? (
-                      <img src={item.image_url} alt="" className="w-full h-full object-cover rounded" />
+                      <img src={assetUrl(item.image_url)} alt="" className="w-full h-full object-cover rounded" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-lg">📦</div>
                     )}

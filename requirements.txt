@@ -23,3 +23,6 @@ redis
 # Testing
 pytest
 httpx
+
+# Scraping (scripts/scrape_bd.py)
+beautifulsoup4

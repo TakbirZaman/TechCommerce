@@ -456,3 +456,55 @@ def create_product_review(
     db.commit()
     
     return {"message": "Review submitted successfully", "id": review.id}
+
+
+# ----------------------------- AI Search ------------------------------------
+from core.services.ai_search import get_known_brands, parse_query, search_products as _ai_search_products
+
+
+class AISearchResultItem(ProductListResponse):
+    """Product card shape reused from ProductListResponse + ranking metadata."""
+    score: float
+    matched_on: list[str] = []
+
+
+class AISearchResponse(BaseModel):
+    query: str
+    interpretation: dict
+    results: list[AISearchResultItem]
+    result_count: int
+
+
+@router.get("/ai-search", response_model=AISearchResponse)
+def ai_search(
+    q: str = Query(..., min_length=1),
+    limit: int = Query(12, ge=1, le=30),
+    db: Session = Depends(get_db),
+):
+    """Natural-language product search (local parser, no external APIs).
+
+    Parses budget shorthand ("under 100k", "1.5 lakh"), use cases, category
+    intents, brands and spec keywords; hard-filters where confident and
+    soft-scores the rest. Gracefully relaxes filters instead of returning
+    empty when over-filtered (documented in interpretation.notes).
+    """
+    interpretation = parse_query(q, known_brands=get_known_brands(db))
+    matches = _ai_search_products(db, interpretation, limit=limit)
+
+    results = []
+    for m in matches:
+        card = ProductListResponse.model_validate(m["product"])
+        results.append(
+            AISearchResultItem(
+                **card.model_dump(),
+                score=round(m["score"], 2),
+                matched_on=m["matched_on"],
+            )
+        )
+
+    return AISearchResponse(
+        query=q,
+        interpretation=interpretation,
+        results=results,
+        result_count=len(results),
+    )

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { admin, catalog } from '@/lib/api'
+import { admin, catalog, assetUrl } from '@/lib/api'
 import { Plus, Edit, Trash2, Search, Upload } from 'lucide-react'
 
 export default function AdminProductsPage() {
@@ -217,7 +217,7 @@ export default function AdminProductsPage() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
                           {product.images?.[0]?.url ? (
-                            <img src={product.images[0].url} alt="" className="w-full h-full object-cover rounded" />
+                            <img src={assetUrl(product.images[0].url)} alt="" className="w-full h-full object-cover rounded" />
                           ) : (
                             <span className="text-lg">📦</span>
                           )}
@@ -334,7 +334,7 @@ export default function AdminProductsPage() {
                     {uploading ? 'Uploading...' : 'Upload File'}
                   </label>
                   {formData.image_url && (
-                    <img src={formData.image_url} alt="Preview" className="h-16 w-16 object-cover rounded border" />
+                    <img src={assetUrl(formData.image_url)} alt="Preview" className="h-16 w-16 object-cover rounded border" />
                   )}
                 </div>
               </div>

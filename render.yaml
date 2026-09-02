@@ -11,3 +11,5 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true

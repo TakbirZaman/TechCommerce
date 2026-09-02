@@ -4,12 +4,89 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
+/**
+ * Resolve a backend-relative asset path (e.g. /uploads/products/x.svg)
+ * against the API base so images load when the frontend and API run on
+ * different origins (direct browser→API calls, no dev proxy involved).
+ */
+export const assetUrl = (path?: string | null): string => {
+  if (!path) return ''
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  return `${API_BASE}${path}`
+}
+
 export interface ScoredProduct {
   product_id: string;
   score: number;
   reasons: string[];
   tradeoffs: string[];
   component_scores: Record<string, number>;
+}
+
+// Admin analytics (GET /api/v1/admin/analytics)
+// All fields optional → consumers must handle missing keys defensively.
+export interface AdminAnalyticsTotals {
+  products?: number;
+  active_products?: number;
+  users?: number;
+  orders?: number;
+  revenue_total?: number;
+  pending_orders?: number;
+  low_stock_count?: number;
+}
+
+export interface AdminAnalytics {
+  totals?: AdminAnalyticsTotals;
+  revenue_by_day?: { date: string; revenue: number; orders: number }[];
+  orders_by_status?: { status: string; count: number }[];
+  top_products?: { product_id: number; name: string; units_sold: number; revenue: number }[];
+  low_stock?: { product_id: number; name: string; sku: string; stock_quantity: number }[];
+  recent_orders?: {
+    id: number;
+    order_number: string;
+    customer: string;
+    total_amount: number;
+    payment_status: string;
+    order_status: string;
+    created_at: string;
+  }[];
+  [key: string]: any;
+}
+
+// AI search (GET /api/v1/catalog/ai-search)
+export interface AISearchInterpretation {
+  budget_min?: number | null;
+  budget_max?: number | null;
+  use_case?: string | null;
+  category?: string | null;
+  category_candidates?: string[];
+  brands?: string[];
+  specs?: Record<string, any>;
+  keywords?: string[];
+  notes?: string[];
+}
+
+export interface AISearchResult {
+  id: number;
+  name: string;
+  slug: string;
+  sku?: string;
+  price: number;
+  compare_at_price?: number | null;
+  stock_quantity?: number;
+  is_featured?: boolean;
+  brand?: string | { name?: string } | null;
+  category?: string | { name?: string } | null;
+  images?: { url: string; is_primary?: boolean; [key: string]: any }[];
+  score?: number;
+  matched_on?: string[];
+}
+
+export interface AISearchResponse {
+  query?: string;
+  interpretation?: AISearchInterpretation;
+  results?: AISearchResult[];
+  result_count?: number;
 }
 
 interface RequestOptions {
@@ -141,6 +218,12 @@ export const catalog = {
   
   autocomplete: (q: string) =>
     fetchAPI<any>(`/api/v1/catalog/autocomplete?q=${encodeURIComponent(q)}`),
+
+  aiSearch: (q: string, limit?: number) => {
+    const searchParams = new URLSearchParams({ q });
+    if (limit !== undefined && limit !== null) searchParams.set('limit', String(limit));
+    return fetchAPI<AISearchResponse>(`/api/v1/catalog/ai-search?${searchParams.toString()}`);
+  },
   
   productReviews: (slug: string) =>
     fetchAPI<{ reviews: any[]; average_rating: number; total_reviews: number }>(
@@ -262,6 +345,8 @@ export const advisor = {
 // Admin API
 export const admin = {
   dashboard: () => fetchAPI<any>('/api/v1/admin/dashboard'),
+
+  adminAnalytics: () => fetchAPI<AdminAnalytics>('/api/v1/admin/analytics'),
   
   products: (params?: { search?: string; page?: number; page_size?: number }) => {
     const searchParams = new URLSearchParams();

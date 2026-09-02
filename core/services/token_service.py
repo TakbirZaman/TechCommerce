@@ -10,10 +10,16 @@ import hashlib
 import hmac
 import json
 import base64
+import logging
 import os
 
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "techcommerce-secret-key-change-in-production")
+if SECRET_KEY == "techcommerce-secret-key-change-in-production":
+    logging.getLogger(__name__).warning(
+        "JWT_SECRET_KEY is not set — using the well-known default. "
+        "Anyone with repo access can forge admin tokens. Set JWT_SECRET_KEY in production!"
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

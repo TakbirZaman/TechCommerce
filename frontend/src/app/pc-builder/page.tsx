@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { pcBuilder, catalog } from '@/lib/api'
+import { pcBuilder, catalog, assetUrl } from '@/lib/api'
 import { Cpu, Plus, Trash2, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react'
 
 interface Component {
@@ -294,7 +294,7 @@ export default function PCBuilderPage() {
                     >
                       <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
                         {product.images?.[0]?.url ? (
-                          <img src={product.images[0].url} alt={product.name} className="w-full h-full object-cover rounded" />
+                          <img src={assetUrl(product.images[0].url)} alt={product.name} className="w-full h-full object-cover rounded" />
                         ) : (
                           <span className="text-xl">📦</span>
                         )}

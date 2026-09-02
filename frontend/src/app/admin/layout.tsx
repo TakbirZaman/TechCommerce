@@ -20,9 +20,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [user, setUser] = useState<any>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // The login page lives INSIDE this layout — never guard it, or unauthenticated
+  // visits get redirected to /admin/login in an infinite loop (40 me-requests/s).
+  const isLoginPage = pathname === '/admin/login'
+
   useEffect(() => {
-    loadUser()
-  }, [])
+    if (!isLoginPage) loadUser()
+  }, [isLoginPage])
 
   const loadUser = async () => {
     try {
@@ -43,6 +47,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   if (!user) {
+    if (isLoginPage) {
+      // Bare render: no admin chrome (sidebar references user.* and would crash).
+      return <>{children}</>
+    }
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>

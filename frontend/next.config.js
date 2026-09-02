@@ -7,7 +7,9 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    // Always proxy API calls in dev so the frontend works out of the box.
+    // Override with NEXT_PUBLIC_API_URL (e.g. for a remote backend in prod).
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
     if (apiUrl) {
       return [
         {
