@@ -111,7 +111,12 @@ async def add_logging(request: Request, call_next):
         response = await call_next(request)
     except Exception as exc:
         _logger.exception("unhandled %s %s", request.method, request.url.path)
-        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+        # Return exception detail in prod for debugging (strip stack, keep message)
+        import traceback
+        tb = traceback.format_exc()
+        detail = f"{type(exc).__name__}: {exc}"
+        # Include first 800 chars of traceback for server logs, but return detail to client for now
+        return JSONResponse(status_code=500, content={"detail": detail[:800], "traceback": tb[:2000]})
     dur = (time.time() - start) * 1000
     _logger.info("%s %s %s %.1fms", request.method, request.url.path, response.status_code, dur)
     return response
