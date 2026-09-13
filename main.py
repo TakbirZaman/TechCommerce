@@ -104,18 +104,52 @@ app.add_middleware(
     expose_headers=["X-Request-ID"],
 )
 
+@app.on_event("startup")
+def _startup_init_db():
+    # Fallback for gunicorn/UvicornWorker where lifespan may not fire
+    try:
+        init_db()
+        _logger.info("startup init_db done")
+    except Exception as e:
+        _logger.warning("startup init_db failed: %s", e)
+    # Also ensure seed if empty
+    try:
+        from core.database import SessionLocal as _SL
+        from core.models.user import User
+        db = _SL()
+        try:
+            if db.query(User).count() == 0:
+                from scripts.seed import seed
+                _logger.info("startup seeding ...")
+                seed()
+                _logger.info("startup seeding done")
+        finally:
+            db.close()
+    except Exception as e:
+        _logger.warning("startup seed check failed: %s", e)
+
 @app.middleware("http")
 async def add_logging(request: Request, call_next):
+    # Lazily ensure DB tables exist on first request (handles missed lifespan)
+    try:
+        from sqlalchemy import text as _t
+        from core.database import engine as _eng
+        with _eng.connect() as _c:
+            _c.execute(_t("SELECT name FROM sqlite_master WHERE type='table' AND name='products'"))
+            row = _c.fetchone()
+            if row is None:
+                _logger.warning("products table missing, running init_db from middleware")
+                init_db()
+    except Exception as e:
+        _logger.warning("middleware init_db check failed: %s", e)
     start = time.time()
     try:
         response = await call_next(request)
     except Exception as exc:
         _logger.exception("unhandled %s %s", request.method, request.url.path)
-        # Return exception detail in prod for debugging (strip stack, keep message)
         import traceback
         tb = traceback.format_exc()
         detail = f"{type(exc).__name__}: {exc}"
-        # Include first 800 chars of traceback for server logs, but return detail to client for now
         return JSONResponse(status_code=500, content={"detail": detail[:800], "traceback": tb[:2000]})
     dur = (time.time() - start) * 1000
     _logger.info("%s %s %s %.1fms", request.method, request.url.path, response.status_code, dur)
