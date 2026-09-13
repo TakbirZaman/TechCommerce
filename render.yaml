@@ -1,3 +1,9 @@
+databases:
+  - name: techcommerce-db
+    plan: free
+    databaseName: techcommerce
+    user: techcommerce
+
 services:
   - type: web
     name: techcommerce-api
@@ -9,7 +15,9 @@ services:
       - key: PYTHON_VERSION
         value: "3.12.0"
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: techcommerce-db
+          property: connectionString
       - key: REDIS_URL
         sync: false
       - key: FRONTEND_URL
