@@ -58,6 +58,15 @@ engine = create_engine(
     connect_args=connect_args,
     **engine_kwargs,
 )
+# Log which DB backend is active (without leaking credentials)
+try:
+    import logging as _logging
+    _db_logger = _logging.getLogger("techcommerce.db")
+    _safe_url = DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+    _db_logger.info("DB engine: %s (pool_pre_ping=%s)", _safe_url[:80], engine_kwargs.get("pool_pre_ping"))
+except Exception:
+    pass
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
 

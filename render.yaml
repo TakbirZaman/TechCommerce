@@ -9,7 +9,8 @@ services:
     name: techcommerce-api
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: alembic upgrade head && gunicorn main:app -k uvicorn.workers.UvicornWorker --workers 2 --bind 0.0.0.0:$PORT
+    # Don't let a transient DB/alembic failure crash the container — health stays up and logs the error
+    startCommand: alembic upgrade head || echo "alembic upgrade failed (continuing)" && gunicorn main:app -k uvicorn.workers.UvicornWorker --workers 2 --bind 0.0.0.0:$PORT --timeout 120 --graceful-timeout 30 --log-level info
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -21,8 +22,12 @@ services:
       - key: REDIS_URL
         sync: false
       - key: FRONTEND_URL
+        value: https://techcommerce-frontend.techcommerce-frontend.workers.dev
+      - key: CORS_EXTRA_ORIGINS
         sync: false
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: SENTRY_DSN
         sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
