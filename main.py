@@ -130,16 +130,44 @@ def _startup_init_db():
 
 @app.middleware("http")
 async def add_logging(request: Request, call_next):
-    # Lazily ensure DB tables exist on first request (handles missed lifespan)
+    # Lazily ensure DB tables exist on first request (handles missed lifespan / empty sqlite)
     try:
         from sqlalchemy import text as _t
-        from core.database import engine as _eng
+        from core.database import engine as _eng, Base
         with _eng.connect() as _c:
-            _c.execute(_t("SELECT name FROM sqlite_master WHERE type='table' AND name='products'"))
-            row = _c.fetchone()
+            result = _c.execute(_t("SELECT name FROM sqlite_master WHERE type='table' AND name='products'"))
+            row = result.fetchone()
             if row is None:
-                _logger.warning("products table missing, running init_db from middleware")
-                init_db()
+                _logger.warning("products table missing, running Base.create_all + init_db from middleware")
+                try:
+                    # Import models to populate Base.metadata
+                    import core.models.catalog  # noqa
+                    import core.models.user  # noqa
+                    import core.models.commerce  # noqa
+                    Base.metadata.create_all(bind=_eng)
+                    _logger.info("Base.create_all done, now init_db")
+                except Exception as e2:
+                    _logger.warning("Base.create_all failed: %s", e2)
+                try:
+                    init_db()
+                    _logger.info("init_db from middleware done")
+                except Exception as e3:
+                    _logger.warning("init_db from middleware failed: %s", e3)
+                # Also try seed if needed
+                try:
+                    from core.database import SessionLocal as _SL2
+                    from core.models.user import User as _U
+                    db2 = _SL2()
+                    try:
+                        if db2.query(_U).count() == 0:
+                            from scripts.seed import seed as _seed
+                            _logger.info("middleware seeding ...")
+                            _seed()
+                            _logger.info("middleware seeding done")
+                    finally:
+                        db2.close()
+                except Exception as e4:
+                    _logger.warning("middleware seed failed: %s", e4)
     except Exception as e:
         _logger.warning("middleware init_db check failed: %s", e)
     start = time.time()
