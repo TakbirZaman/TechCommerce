@@ -1,28 +1,53 @@
+# SQLite is in the Python standard library — no extra driver needed.
+# For live Postgres dumps: pip install "psycopg[binary]" separately.
+
 # Core ML
-numpy
-pandas
-scikit-learn
-xgboost
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.4.2
+xgboost==2.0.3
 
 # API
-fastapi
-uvicorn[standard]
-gunicorn
-pydantic>=2
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+gunicorn==22.0.0
+pydantic>=2.7,<3
+python-multipart==0.0.9
 
-# Database
-sqlalchemy>=2
+# Database — SQLite is built-in (no driver needed). Postgres enabled for prod.
+sqlalchemy>=2.0,<3
+alembic==1.13.2
+psycopg[binary]==3.1.13
+
+# Storage
+boto3==1.34.0
+
+# Payments / HTTP
+httpx==0.27.2
+requests==2.32.3
 
 # Auth
-python-multipart
+bcrypt==4.1.3
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+email-validator==2.2.0
 
 # Async jobs
-celery
-redis
+celery==5.4.0
+redis==5.0.5
+
+# Observability
+sentry-sdk==2.14.0
 
 # Testing
-pytest
-httpx
+pytest==8.3.2
+pytest-asyncio==0.23.7
+
+# PDF
+reportlab==4.1.0
 
 # Scraping (scripts/scrape_bd.py)
-beautifulsoup4
+beautifulsoup4==4.12.3
+
+# Env loading (local dev)
+python-dotenv==1.0.1
