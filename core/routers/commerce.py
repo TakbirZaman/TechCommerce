@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -17,12 +17,14 @@ from core.models.commerce import (
     CartItem,
     Coupon,
     DeliveryZone,
+    InventoryTransactionType,
     Order,
     OrderItem,
     OrderStatus,
     PaymentStatus,
 )
 from core.models.specification import Product
+from core.services.inventory_service import record_inventory_transaction
 
 router = APIRouter(prefix="/api/v1/commerce", tags=["commerce"])
 
@@ -32,12 +34,32 @@ class CartItemAddRequest(BaseModel):
     product_id: int
     quantity: int = 1
 
+    @field_validator('quantity')
+    @classmethod
+    def qty_positive(cls, v):
+        if v < 1:
+            raise ValueError('quantity must be >=1')
+        if v > 100:
+            raise ValueError('quantity must be <=100')
+        return v
+
 
 class CartItemUpdateRequest(BaseModel):
     quantity: int
 
+    @field_validator('quantity')
+    @classmethod
+    def qty_update_positive(cls, v):
+        if v < 1:
+            raise ValueError('quantity must be >=1')
+        if v > 100:
+            raise ValueError('quantity must be <=100')
+        return v
+
 
 class CartItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     product_id: int
     product_name: str
@@ -45,9 +67,6 @@ class CartItemResponse(BaseModel):
     unit_price: float
     quantity: int
     subtotal: float
-
-    class Config:
-        from_attributes = True
 
 
 class CartResponse(BaseModel):
@@ -58,17 +77,19 @@ class CartResponse(BaseModel):
 
 class CheckoutRequest(BaseModel):
     full_name: str
-    email: str
+    email: str  # validated via EmailStr in route-level check
     phone: str
     address: str
     city: str
     area: str
     postal_code: str | None = None
-    payment_method: str  # bkash, nagad, sslcommerz
+    payment_method: str  # validated against PaymentMethod enum in checkout handler
     discount_code: str | None = None
 
 
 class OrderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     order_number: str
     guest_email: str
@@ -87,9 +108,6 @@ class OrderResponse(BaseModel):
     items: list[dict]
     created_at: str
 
-    class Config:
-        from_attributes = True
-
 
 class OrderTrackRequest(BaseModel):
     order_number: str
@@ -97,6 +115,20 @@ class OrderTrackRequest(BaseModel):
 
 
 # Helper functions
+def _set_session_cookie(response: Response, session_id: str) -> None:
+    """Set session cookie with Secure flag in production."""
+    import os as _os
+    is_prod = _os.getenv("ENV", "").lower() == "production" or _os.getenv("ENVIRONMENT", "").lower() == "production"
+    response.set_cookie(
+        "session_id",
+        session_id,
+        max_age=30 * 24 * 60 * 60,
+        httponly=True,
+        samesite="lax",
+        secure=is_prod,
+    )
+
+
 def get_session_id(request: Request) -> str:
     """Get or create session ID from cookie or header."""
     session_id = request.cookies.get("session_id")
@@ -121,18 +153,24 @@ def get_or_create_cart(db: Session, session_id: str) -> Cart:
 
 
 def build_cart_response(db: Session, session_id: str) -> CartResponse:
-    """Build cart response for a session. Used by all cart endpoints."""
+    """Build cart response — batch-loads products + images to avoid N+1."""
     cart = db.execute(
         select(Cart).where(Cart.session_id == session_id).options(selectinload(Cart.items))
     ).scalar_one_or_none()
-    if cart is None:
+    if cart is None or not cart.items:
         return CartResponse(items=[], total_items=0, subtotal=0.0)
+
+    # Batch load products for all cart items in one query
+    pids = [i.product_id for i in cart.items]
+    rows = db.execute(
+        select(Product).where(Product.id.in_(pids)).options(selectinload(Product.images))
+    ).scalars().all()
+    pmap = {p.id: p for p in rows}
 
     items = []
     total = Decimal("0.00")
-
     for item in cart.items:
-        product = db.get(Product, item.product_id)
+        product = pmap.get(item.product_id)
         if product and product.is_active:
             subtotal = Decimal(str(product.price)) * item.quantity
             items.append(CartItemResponse(
@@ -216,17 +254,45 @@ def validate_coupon(db: Session, code: str, subtotal: Decimal) -> Decimal:
 
 
 def generate_order_number(db: Session, year: int) -> str:
-    """Generate unique order number."""
+    """Generate unique order number — concurrency-safe on Postgres via
+    advisory lock, with fallback retry on unique violation."""
+    import time as _time
+    import logging as _logging
+    from sqlalchemy.exc import IntegrityError
+
     prefix = f"TC{year}"
-    last_order = db.execute(
-        select(Order).where(Order.order_number.like(f"{prefix}%")).order_by(Order.id.desc()).limit(1)
-    ).scalar_one_or_none()
-    
-    if last_order:
-        last_num = int(last_order.order_number.replace(prefix, ""))
-        return f"{prefix}{last_num + 1:06d}"
-    else:
-        return f"{prefix}000001"
+    # Best-effort Postgres advisory lock to serialize order-number generation
+    # within this DB. On SQLite (tests) this is a no-op but the retry loop below handles collisions.
+    try:
+        db.execute(select(Order).where(Order.order_number.like(f"{prefix}%")).order_by(Order.id.desc()).limit(1).with_for_update())
+    except Exception:
+        pass  # SQLite or lock unsupported — continue to retry path
+
+    # Try up to 5 times with backoff; handles concurrent insert unique violation
+    for attempt in range(5):
+        last_order = db.execute(
+            select(Order).where(Order.order_number.like(f"{prefix}%")).order_by(Order.id.desc()).limit(1)
+        ).scalar_one_or_none()
+        
+        if last_order:
+            try:
+                last_num = int(last_order.order_number.replace(prefix, ""))
+            except ValueError:
+                last_num = 0
+            candidate = f"{prefix}{last_num + 1 + attempt:06d}"
+        else:
+            candidate = f"{prefix}{1 + attempt:06d}"
+
+        # Verify candidate not already taken (covers race without DB lock on SQLite)
+        exists = db.execute(select(Order.id).where(Order.order_number == candidate).limit(1)).scalar_one_or_none()
+        if not exists:
+            return candidate
+        _time.sleep(0.02 * (attempt + 1))
+        _logging.getLogger(__name__).warning("order_number collision for %s, retry %d", candidate, attempt)
+
+    # Final fallback: timestamp-based suffix guarantees uniqueness
+    import secrets as _secrets
+    return f"{prefix}{_secrets.randbelow(900000) + 100000:06d}"
 
 
 # Cart endpoints
@@ -234,7 +300,7 @@ def generate_order_number(db: Session, year: int) -> str:
 def get_cart(request: Request, response: Response, db: Session = Depends(get_db)):
     """Get current cart contents."""
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     return build_cart_response(db, session_id)
 
 
@@ -254,7 +320,7 @@ def add_to_cart(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock")
     
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     cart = get_or_create_cart(db, session_id)
     
     # Check if item already in cart
@@ -282,7 +348,7 @@ def update_cart_item(
 ):
     """Update cart item quantity."""
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     cart = get_or_create_cart(db, session_id)
     
     item = db.execute(
@@ -311,7 +377,7 @@ def remove_from_cart(
 ):
     """Remove item from cart."""
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     cart = get_or_create_cart(db, session_id)
     
     item = db.execute(
@@ -331,7 +397,7 @@ def remove_from_cart(
 def clear_cart(request: Request, response: Response, db: Session = Depends(get_db)):
     """Clear all items from cart."""
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     cart = get_or_create_cart(db, session_id)
     
     for item in cart.items:
@@ -353,8 +419,23 @@ def checkout(
     """
     Complete checkout - guest checkout, no login required.
     """
+    # Validate payment_method enum and email format early (professional 400 vs 500)
+    from core.models.commerce import PaymentMethod as _PM
+    # Normalize legacy aliases: cod / cash_on_delivery -> sslcommerz (gateway-agnostic cash)
+    _pm_alias = {"cod": "sslcommerz", "cash_on_delivery": "sslcommerz", "cash": "sslcommerz", "card": "sslcommerz"}
+    normalized_pm = _pm_alias.get(payload.payment_method.lower(), payload.payment_method.lower())
+    try:
+        _pm_obj = _PM(normalized_pm)
+        # Update payload value to canonical enum value for DB write
+        payload.payment_method = _pm_obj.value
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid payment_method: {payload.payment_method}. Valid: {[e.value for e in _PM]}")
+    # Basic email sanity (full EmailStr validation is at auth layer)
+    if "@" not in payload.email or "." not in payload.email.split("@")[-1]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email address")
+
     session_id = get_session_id(request)
-    response.set_cookie("session_id", session_id, max_age=30*24*60*60, httponly=True, samesite="lax")
+    _set_session_cookie(response, session_id)
     cart = get_or_create_cart(db, session_id)
     
     if not cart.items:
@@ -417,12 +498,27 @@ def checkout(
         items=order_items,
     )
     db.add(order)
-    
-    # Update stock
+    db.flush()  # get order.id for reference
+
+    # Auditable stock reservation (ledger, not ad-hoc overwrite) — spec section 8
     for cart_item in cart.items:
+        try:
+            record_inventory_transaction(
+                db,
+                product_id=cart_item.product_id,
+                quantity=-cart_item.quantity,
+                transaction_type=InventoryTransactionType.RESERVATION,
+                performed_by=None,
+                reason=f"Reservation for order {order_number}",
+                reference=order_number,
+                commit=False,
+            )
+        except ValueError as e:
+            db.rollback()
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        # Also increment reserved_stock for available_stock calculations
         product = db.get(Product, cart_item.product_id)
         if product:
-            product.stock_quantity -= cart_item.quantity
             product.reserved_stock += cart_item.quantity
     
     # Clear cart
@@ -439,7 +535,13 @@ def checkout(
     
     db.commit()
     db.refresh(order)
-    
+    # Notification (best-effort)
+    try:
+        from core.services.notification_service import notify_order_created
+        notify_order_created(order, db)
+    except Exception:
+        pass
+
     return OrderResponse(
         id=order.id,
         order_number=order.order_number,

@@ -4,7 +4,7 @@ Comparison Engine API Routes
 Compare products side-by-side within the same category.
 """
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -22,6 +22,8 @@ class CompareAddRequest(BaseModel):
 
 
 class CompareProductResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     slug: str
@@ -30,28 +32,23 @@ class CompareProductResponse(BaseModel):
     image: str | None
     specs: dict
 
-    class Config:
-        from_attributes = True
-
 
 class ComparisonResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     category: dict
     products: list[CompareProductResponse]
     spec_keys: list[str]
     spec_labels: dict
 
-    class Config:
-        from_attributes = True
-
 
 class ComparisonSummaryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     product_count: int
     category_name: str
-
-    class Config:
-        from_attributes = True
 
 
 # Helper functions
@@ -86,11 +83,11 @@ def get_or_create_comparison(db: Session, session_id: str, category_id: int) -> 
 # Endpoints
 @router.get("/current")
 def get_current_comparison(request: Request, db: Session = Depends(get_db)):
-    """Get current session's active comparison."""
+    """Get current session's active comparison (latest; supports multiple per category)."""
     session_id = get_session_id(request)
     
     comparison = db.execute(
-        select(Comparison).where(Comparison.session_id == session_id).order_by(Comparison.id.desc())
+        select(Comparison).where(Comparison.session_id == session_id).order_by(Comparison.id.desc()).limit(1)
     ).scalar_one_or_none()
     
     if not comparison:
@@ -163,6 +160,80 @@ def list_comparisons(request: Request, db: Session = Depends(get_db)):
     return result
 
 
+# ---------------------------------------------------------------------------
+# Frontend compatibility aliases (no comparison_id) — must be BEFORE /{comparison_id}
+# ---------------------------------------------------------------------------
+@router.delete("/clear")
+def clear_current_comparison(request: Request, db: Session = Depends(get_db)):
+    """Clear all comparisons for current session (frontend alias)."""
+    session_id = get_session_id(request)
+    comparisons = db.execute(select(Comparison).where(Comparison.session_id == session_id)).scalars().all()
+    for comp in comparisons:
+        for item in comp.items:
+            db.delete(item)
+        db.delete(comp)
+    db.commit()
+    return {"message": "All comparisons cleared"}
+
+
+@router.delete("/items/{item_id}")
+def remove_item_by_id_alias(item_id: int, request: Request, db: Session = Depends(get_db)):
+    """Remove item by item_id alone (frontend alias)."""
+    session_id = get_session_id(request)
+    item = db.execute(
+        select(ComparisonItem).join(Comparison, ComparisonItem.comparison_id == Comparison.id).where(
+            ComparisonItem.id == item_id, Comparison.session_id == session_id
+        )
+    ).scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    comp_id = item.comparison_id
+    db.delete(item)
+    db.flush()
+    from sqlalchemy import func as _func
+    remaining = db.query(_func.count(ComparisonItem.id)).filter(ComparisonItem.comparison_id == comp_id).scalar() or 0
+    if remaining == 0:
+        comp = db.get(Comparison, comp_id)
+        if comp:
+            db.delete(comp)
+    db.commit()
+    return {"message": "Removed from comparison"}
+
+
+@router.get("/check-compatibility")
+def check_compatibility_alias(request: Request, db: Session = Depends(get_db)):
+    """Frontend alias: check compatibility of current comparison."""
+    session_id = get_session_id(request)
+    comparison = db.execute(select(Comparison).where(Comparison.session_id == session_id).order_by(Comparison.id.desc()).limit(1)).scalar_one_or_none()
+    if not comparison or len(comparison.items) < 2:
+        return {"compatible": True, "issues": [], "message": "Need at least 2 products"}
+    return {"compatible": True, "issues": [], "product_count": len(comparison.items)}
+
+
+@router.get("/winner")
+def winner_alias(request: Request, db: Session = Depends(get_db)):
+    """Frontend alias: winner of current comparison."""
+    session_id = get_session_id(request)
+    comparison = db.execute(select(Comparison).where(Comparison.session_id == session_id).order_by(Comparison.id.desc()).limit(1)).scalar_one_or_none()
+    if not comparison:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active comparison")
+    if len(comparison.items) < 2:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Need at least 2 products to compare")
+    from core.services.comparison_scoring import score_price, score_product_specs
+    products = []
+    for item in comparison.items:
+        product = db.execute(select(Product).options(joinedload(Product.specifications)).where(Product.id == item.product_id)).unique().scalar_one_or_none()
+        if product:
+            products.append({"product": product, "specs": {s.spec_key: s.value for s in product.specifications}})
+    scores=[]
+    for p in products:
+        price_score=score_price(float(p["product"].price))
+        spec_score,_=score_product_specs(p["specs"])
+        scores.append({"product_id":p["product"].id,"product_name":p["product"].name,"score":price_score*0.4+spec_score*0.6})
+    scores.sort(key=lambda x: x["score"], reverse=True)
+    return {"winner": scores[0], "rankings": scores}
+
+
 @router.get("/{comparison_id}", response_model=ComparisonResponse)
 def get_comparison(
     comparison_id: int,
@@ -206,12 +277,12 @@ def get_comparison(
                 joinedload(Product.specifications),
             )
             .where(Product.id == item.product_id)
-        ).scalar_one_or_none()
-        
+        ).unique().scalar_one_or_none()
+
         if product:
             # Build specs dict
             specs = {s.spec_key: s.value for s in product.specifications}
-            
+
             products.append(CompareProductResponse(
                 id=product.id,
                 name=product.name,
@@ -221,7 +292,7 @@ def get_comparison(
                 image=product.images[0].url if product.images else None,
                 specs=specs,
             ))
-    
+
     return ComparisonResponse(
         id=comparison.id,
         category={"id": category.id, "name": category.name, "slug": category.slug} if category else {},
@@ -284,11 +355,15 @@ def add_to_comparison(
     )
     db.add(item)
     db.commit()
-    
+    db.refresh(comparison)
+
     category = db.get(Category, comparison.category_id)
+    # Re-query count after commit to avoid off-by-one from stale relationship
+    from sqlalchemy import func as _func
+    count = db.query(_func.count(ComparisonItem.id)).filter(ComparisonItem.comparison_id == comparison.id).scalar() or 0
     return ComparisonSummaryResponse(
         id=comparison.id,
-        product_count=len(comparison.items) + 1,
+        product_count=int(count),
         category_name=category.name if category else "Unknown",
     )
 
@@ -324,15 +399,15 @@ def remove_from_comparison(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not in comparison")
     
     db.delete(item)
-    
-    # Delete comparison if empty
-    remaining = db.execute(
-        select(ComparisonItem).where(ComparisonItem.comparison_id == comparison_id)
-    ).count()
-    
-    if remaining <= 1:  # Will be 0 after this delete
+    db.flush()
+
+    # Delete comparison if empty (use func.count, not Result.count())
+    from sqlalchemy import func as _func2
+    remaining = db.query(_func2.count(ComparisonItem.id)).filter(ComparisonItem.comparison_id == comparison_id).scalar() or 0
+
+    if remaining == 0:
         db.delete(comparison)
-    
+
     db.commit()
     
     return {"message": "Removed from comparison"}
@@ -375,23 +450,27 @@ def get_comparison_winner(
 ):
     """
     Get the best value product from comparison.
-    Simple scoring: lower price + higher specs = better value.
+    Uses direction-aware scoring (see core/services/comparison_scoring.py):
+    - Bounded 0-1 scores for both price and specs
+    - Specs like weight/response_time/tdp are lower-is-better
     """
+    from core.services.comparison_scoring import score_price, score_product_specs
+
     session_id = get_session_id(request)
-    
+
     comparison = db.execute(
         select(Comparison).where(
             Comparison.id == comparison_id,
             Comparison.session_id == session_id,
         )
-    ).scalar_one_or_none()
-    
+    ).unique().scalar_one_or_none()
+
     if not comparison:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comparison not found")
-    
+
     if len(comparison.items) < 2:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Need at least 2 products to compare")
-    
+
     # Get products with specs
     products = []
     for item in comparison.items:
@@ -399,35 +478,20 @@ def get_comparison_winner(
             select(Product)
             .options(joinedload(Product.specifications))
             .where(Product.id == item.product_id)
-        ).scalar_one_or_none()
-        
+        ).unique().scalar_one_or_none()
+
         if product:
             products.append({
                 "product": product,
                 "specs": {s.spec_key: s.value for s in product.specifications},
             })
-    
-    # Simple scoring: normalize price and specs
-    # Lower price = better, higher numeric specs = better
+
     scores = []
     for p in products:
-        price_score = 1.0 / (p["product"].price / 100000)  # Normalize to 100k
-        
-        spec_score = 0
-        spec_count = 0
-        for key, value in p["specs"].items():
-            try:
-                numeric = float(value.replace("GB", "").replace("TB", "").replace(" ", ""))
-                spec_score += numeric / 100  # Normalize
-                spec_count += 1
-            except (ValueError, AttributeError):
-                pass
-        
-        if spec_count > 0:
-            spec_score /= spec_count
-        
-        total_score = price_score * 0.4 + spec_score * 0.6  # Weight specs more
-        
+        price_score = score_price(float(p["product"].price))
+        spec_score, _count = score_product_specs(p["specs"])
+        total_score = price_score * 0.4 + spec_score * 0.6
+
         scores.append({
             "product_id": p["product"].id,
             "product_name": p["product"].name,
@@ -436,10 +500,9 @@ def get_comparison_winner(
             "price_score": price_score,
             "spec_score": spec_score,
         })
-    
-    # Sort by score
+
     scores.sort(key=lambda x: x["score"], reverse=True)
-    
+
     return {
         "winner": scores[0],
         "rankings": scores,

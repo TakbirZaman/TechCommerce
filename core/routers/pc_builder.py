@@ -6,7 +6,7 @@ Build custom PC configurations with compatibility checking.
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -37,6 +37,8 @@ class ComponentAddRequest(BaseModel):
 
 
 class ComponentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     product_id: int
     component_type: str
@@ -45,11 +47,10 @@ class ComponentResponse(BaseModel):
     product_image: str | None
     specs: dict
 
-    class Config:
-        from_attributes = True
-
 
 class PCBuildResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     total_price: float
@@ -58,9 +59,6 @@ class PCBuildResponse(BaseModel):
     compatibility_notes: list[str]
     components: list[ComponentResponse]
     component_types: dict
-
-    class Config:
-        from_attributes = True
 
 
 class CompatibilityCheckResponse(BaseModel):
@@ -239,7 +237,7 @@ def get_suggested_components(
         select(Product)
         .options(joinedload(Product.images), joinedload(Product.specifications))
         .where(Product.is_active == True)
-    ).scalars().all()
+    ).unique().scalars().all()
     
     for product in products:
         # Check if product matches the component type by category
@@ -461,6 +459,37 @@ def check_build_compatibility(request: Request, db: Session = Depends(get_db)):
     return check_compatibility(db, build)
 
 
+@router.post("/calculate-total")
+def calculate_total_alias(payload: dict, db: Session = Depends(get_db)):
+    """Frontend alias: calculate total price from product_ids."""
+    product_ids = payload.get("product_ids") or payload.get("productIds") or []
+    total = 0.0
+    products=[]
+    for pid in product_ids:
+        prod = db.get(Product, pid)
+        if prod:
+            total += float(prod.price)
+            products.append({"id": prod.id, "name": prod.name, "price": float(prod.price)})
+    return {"total": total, "subtotal": total, "product_count": len(products), "products": products}
+
+
+@router.post("/suggested-components")
+def suggested_components_alias(payload: dict, request: Request, db: Session = Depends(get_db)):
+    """Frontend alias: suggested components for given build."""
+    components = payload.get("components", [])
+    # Create temp build
+    class TempBuild:
+        def __init__(self): self.components=[]
+    temp = TempBuild()
+    for comp in components:
+        temp.components.append(type('C', (), {'component_type': comp.get("category") or comp.get("component_type"), 'product_id': comp.get("product_id")})())
+    # Return per-type suggestions
+    result={}
+    for ct in COMPONENT_TYPES:
+        result[ct]= get_suggested_components(db, temp, ct)[:3]
+    return result
+
+
 @router.post("/check-compatibility", response_model=CompatibilityCheckResponse)
 def check_build_compatibility_post(
     request: Request,
@@ -474,7 +503,6 @@ def check_build_compatibility_post(
             is_compatible=True,
             issues=[],
             warnings=[],
-            score=100,
         )
     
     # Create a temporary build-like structure for compatibility check
@@ -512,6 +540,34 @@ def get_suggestions(
     build = get_or_create_build(db, session_id)
     
     return get_suggested_components(db, build, component_type)
+
+
+@router.get("/bottleneck-check")
+def bottleneck_check(
+    request: Request,
+    workload: str = "gaming",
+    resolution: str = "1080p",
+    db: Session = Depends(get_db),
+):
+    """Check for CPU/GPU bottleneck in current build."""
+    from core.services.bottleneck_service import detect_bottleneck
+
+    session_id = get_session_id(request)
+    build = get_or_create_build(db, session_id)
+
+    cpu_spec = None
+    gpu_spec = None
+    for comp in build.components:
+        product = db.get(Product, comp.product_id)
+        if not product:
+            continue
+        specs = {s.spec_key: s.value for s in product.specifications}
+        if comp.component_type == "cpu":
+            cpu_spec = specs.get("cpu") or product.name
+        elif comp.component_type == "gpu":
+            gpu_spec = specs.get("gpu") or product.name
+
+    return detect_bottleneck(cpu_spec, gpu_spec, resolution=resolution, workload=workload)
 
 
 @router.get("/component-types")
