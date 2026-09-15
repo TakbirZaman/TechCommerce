@@ -2,6 +2,7 @@
 Authentication Service
 
 Handles: Register, Login, Refresh Token, Logout, Forgot Password
+Requires bcrypt — fails fast if not installed (no SHA256 fallback).
 """
 from datetime import UTC, datetime, timedelta
 from typing import Optional
@@ -13,14 +14,41 @@ from sqlalchemy.orm import Session
 
 from core.models.user import User, RefreshToken, UserRole
 
+try:
+    import bcrypt  # type: ignore
+except ImportError as _e:
+    raise RuntimeError(
+        "bcrypt is required for password hashing. Install it via `pip install bcrypt` "
+        "(or `pip install -r requirements.txt`). SHA256 fallback has been removed for security."
+    ) from _e
 
-# Password hashing (simple SHA256 for demo - use bcrypt in production)
+
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password with bcrypt."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return hash_password(password) == password_hash
+    """Verify password — only bcrypt hashes are accepted."""
+    if not password_hash:
+        return False
+    # Legacy SHA256 hashes (pre-fix) are no longer considered valid.
+    # If you have old SHA256 hashes in DB, force a password reset.
+    if not password_hash.startswith("$2"):
+        return False
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except Exception:
+        return False
+
+
+def _hash_token(token: str) -> str:
+    """Hash reset tokens with SHA256 (fast, not a password)."""
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def _verify_token(token: str, token_hash: str) -> bool:
+    return _hash_token(token) == token_hash
 
 
 def create_user(
@@ -31,18 +59,28 @@ def create_user(
     phone: str | None = None,
     role: UserRole = UserRole.CUSTOMER,
 ) -> User:
-    """Create a new user."""
-    # Check if email exists
+    """Create a new user.
+
+    Bootstrap: if no admin exists yet, the first user OR any user registering
+    as admin@gmail.com is promoted to ADMIN so the deployed instance can
+    recover from an empty DB without manual SQL.
+    """
     existing = db.execute(select(User).where(User.email == email.lower())).scalar_one_or_none()
     if existing:
         raise ValueError("Email already registered")
+    
+    # Bootstrap admin if none exists — only canonical admin email auto-promotes
+    has_admin = db.execute(select(User).where(User.role == UserRole.ADMIN)).scalar_one_or_none()
+    effective_role = role
+    if has_admin is None and email.lower() == "admin@gmail.com":
+        effective_role = UserRole.ADMIN
     
     user = User(
         email=email.lower(),
         password_hash=hash_password(password),
         full_name=full_name,
         phone=phone,
-        role=role,
+        role=effective_role,
     )
     db.add(user)
     db.commit()
@@ -60,7 +98,6 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     if not user.is_active:
         return None
     
-    # Update last login
     user.last_login = datetime.now(UTC)
     db.commit()
     
@@ -132,16 +169,15 @@ def generate_password_reset_token(db: Session, email: str) -> Optional[str]:
         return None
     
     token = secrets.token_urlsafe(32)
-    user.reset_token = hash_password(token)  # Store hash
+    user.reset_token = _hash_token(token)
     user.reset_token_expires = datetime.now(UTC) + timedelta(hours=1)
     db.commit()
-    
-    return token  # Return raw token to send via email
+
+    return token
 
 
 def reset_password(db: Session, token: str, new_password: str) -> bool:
     """Reset password using token."""
-    # We need to check all users with non-expired reset tokens
     users = db.execute(
         select(User).where(
             User.reset_token.isnot(None),
@@ -150,7 +186,7 @@ def reset_password(db: Session, token: str, new_password: str) -> bool:
     ).scalars().all()
     
     for user in users:
-        if verify_password(token, user.reset_token):
+        if _verify_token(token, user.reset_token):
             user.password_hash = hash_password(new_password)
             user.reset_token = None
             user.reset_token_expires = None

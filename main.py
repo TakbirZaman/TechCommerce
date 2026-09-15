@@ -61,9 +61,14 @@ async def lifespan(app: FastAPI):
     try:
         from core.database import SessionLocal as _SessionLocal
         from core.models.user import User
+        from core.models.catalog import Brand, Category
         db = _SessionLocal()
         try:
-            if db.query(User).count() == 0:
+            user_count = db.query(User).count()
+            brand_count = db.query(Brand).count()
+            cat_count = db.query(Category).count()
+            if user_count == 0 or brand_count == 0 or cat_count == 0:
+                _logger.info("Catalog empty (users=%s brands=%s cats=%s) — seeding", user_count, brand_count, cat_count)
                 from scripts.seed import seed
                 seed()
         finally:
@@ -112,15 +117,19 @@ def _startup_init_db():
         _logger.info("startup init_db done")
     except Exception as e:
         _logger.warning("startup init_db failed: %s", e)
-    # Also ensure seed if empty
+    # Also ensure seed if empty (users OR catalog)
     try:
         from core.database import SessionLocal as _SL
         from core.models.user import User
+        from core.models.catalog import Brand, Category
         db = _SL()
         try:
-            if db.query(User).count() == 0:
+            u = db.query(User).count()
+            b = db.query(Brand).count()
+            c = db.query(Category).count()
+            if u == 0 or b == 0 or c == 0:
                 from scripts.seed import seed
-                _logger.info("startup seeding ...")
+                _logger.info("startup seeding (users=%s brands=%s cats=%s) ...", u, b, c)
                 seed()
                 _logger.info("startup seeding done")
         finally:

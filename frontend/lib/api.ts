@@ -1,7 +1,9 @@
 // Typed client for the intelligence-system FastAPI backend.
-// Set NEXT_PUBLIC_API_BASE_URL in the environment to point at the deployed API.
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+// Supports both NEXT_PUBLIC_API_URL (canonical) and legacy NEXT_PUBLIC_API_BASE_URL.
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  "http://localhost:8000";
 
 export type Category = "laptop" | "smartphone" | "monitor";
 
