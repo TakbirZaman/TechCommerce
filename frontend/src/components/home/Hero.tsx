@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { Search, Sparkles } from 'lucide-react'
+import { ProjectInfoModal } from '@/components/home/ProjectInfoModal'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -133,6 +134,16 @@ export function Hero() {
                 <span className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-sky-300 to-purple-300 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
             ))}
+          </motion.div>
+
+          {/* Project details trigger */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.95 }}
+            className="mt-7 flex justify-center"
+          >
+            <ProjectInfoModal />
           </motion.div>
         </div>
       </div>
