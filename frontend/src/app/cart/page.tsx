@@ -109,7 +109,7 @@ export default function CartPage() {
                     <img
                       src={item.product_image}
                       alt={item.product_name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-contain bg-white rounded-lg"
                     />
                   ) : (
                     <span className="text-2xl">📦</span>

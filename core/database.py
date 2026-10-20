@@ -98,9 +98,6 @@ def init_db():
     import core.models.comparison  # noqa: F401
     import core.models.pc_builder  # noqa: F401
     import core.models.advisor  # noqa: F401
-    import core.models.rbac  # noqa: F401
-    import core.models.operations  # noqa: F401
-    import core.models.notification  # noqa: F401
     Base.metadata.create_all(bind=engine)
     # Stamp alembic_version if missing (so alembic doesn't re-run initial migration)
     try:

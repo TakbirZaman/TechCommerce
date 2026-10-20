@@ -294,7 +294,7 @@ export default function PCBuilderPage() {
                     >
                       <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
                         {product.images?.[0]?.url ? (
-                          <img src={assetUrl(product.images[0].url)} alt={product.name} className="w-full h-full object-cover rounded" />
+                          <img src={assetUrl(product.images[0].url)} alt={product.name} className="w-full h-full object-contain bg-white rounded" />
                         ) : (
                           <span className="text-xl">📦</span>
                         )}

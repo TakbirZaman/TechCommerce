@@ -156,7 +156,7 @@ export default function ComparePage() {
                       <Link href={`/products/${item.product?.slug}`}>
                         <div className="w-20 h-20 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
                           {item.product?.images?.[0]?.url ? (
-                            <img src={assetUrl(item.product.images[0].url)} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={assetUrl(item.product.images[0].url)} alt={item.product.name} className="w-full h-full object-contain bg-white rounded-lg" />
                           ) : (
                             <span className="text-2xl">📦</span>
                           )}
