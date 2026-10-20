@@ -1,0 +1,1678 @@
+{
+  "schema_version": 1,
+  "currency": "BDT",
+  "source": "Star Tech",
+  "products": [
+    {
+      "name": "Microsoft 13\" Surface Laptop Snapdragon X Plus 8 Core 13.8\" PixelSense Touch Copilot+ PC Laptop",
+      "brand": "Microsoft",
+      "url": "https://www.startech.com.bd/microsoft-13-inch-surface-laptop",
+      "price": 165000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/635c62d336c0bc548f55.webp",
+      "specs": {
+        "processor": "Qualcomm Snapdragon X Plus 8 Core",
+        "ram": "16GB LPDDR5x, Storage: 256GB PCIe 4.0 SSD",
+        "display": "13.8\" (1920 x 1280) PixelSense, IPS, 60Hz, Touch",
+        "features": "Copilot+ PC, Fingerprint, Wi-Fi 7, Type-C, Backlit Keyboard"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/microsoft/surface-laptop/surface-laptop-01-228x228.webp",
+      "image_sha256": "002a076ffbcc15a96fd5d6da4bdc12f3d87387a4f0c582a20065e03841cc40e4",
+      "observed_at": "2026-10-20T09:48:52.367186+00:00"
+    },
+    {
+      "name": "MacBook Air M5 Chip 13-inch",
+      "brand": "MacBook",
+      "url": "https://www.startech.com.bd/apple-macbook-air-m5-13-inch",
+      "price": 161500.0,
+      "compare_price": 175000.0,
+      "image": "/uploads/products/catalog/85e9d12692b0eb2ab11b.webp",
+      "specs": {
+        "processor": "Apple M5 chip with 10‑core CPU, 8‑core GPU, 16‑core Neural Engine",
+        "ram": "16GB Unified Memory, Storage: 512GB SSD",
+        "display": "13.6-inch Liquid Retina display (2560x1664) with True Tone",
+        "features": "Backlit Magic Keyboard with Touch ID"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/apple/macbook-air-13-m4/sky-blue/macbook-air-13-m4-sky-blue-01-228x228.webp",
+      "image_sha256": "e97731212db1a648f970f2de9c58da5eb90248663961aed08643eed2fc51205b",
+      "observed_at": "2026-10-20T09:48:52.403227+00:00"
+    },
+    {
+      "name": "MSI Stealth A16 AI+ A3XWJG Ryzen AI 9 HX 370 RTX 5090 24GB Graphics 16” QHD+ 240Hz OLED Gaming Laptop Copilot+PC",
+      "brand": "MSI",
+      "url": "https://www.startech.com.bd/msi-stealth-a16-ai-plus-a3xwjg-laptop",
+      "price": 660000.0,
+      "compare_price": 670000.0,
+      "image": "/uploads/products/catalog/a8c5700d5bf6a7c8851c.webp",
+      "specs": {
+        "processor": "AMD Ryzen AI 9 HX 370 (24MB L3 Cache, Up to 5.1GHz)",
+        "ram": "64GB LPDDR5x, Storage: 2TB NVMe PCIe Gen4 M.2 SSD",
+        "graphics": "NVIDIA GeForce RTX 5090 24GB GDDR7 Laptop GPU",
+        "features": "RGB Keyboard,Fingerprint, Webcam Shutter, 240Hz OLED Display"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/msi/stealth-a16-ai-a3xwjg/stealth-a16-ai-a3xwjg-02-228x228.webp",
+      "image_sha256": "b6275818e3bce06d8fef37bc6b66700a8bee561783f39f47b1ca8751551b3ad0",
+      "observed_at": "2026-10-20T09:48:52.420089+00:00"
+    },
+    {
+      "name": "Walton Prelude N41 Pro Celeron N4120 14\" FHD Laptop",
+      "brand": "Walton",
+      "url": "https://www.startech.com.bd/walton-prelude-n41-pro-celeron-n4120-laptop",
+      "price": 28500.0,
+      "compare_price": 33900.0,
+      "image": "/uploads/products/catalog/d6da81bf7eb00cd980bf.webp",
+      "specs": {
+        "processor": "Intel Celeron N4120 (4MB Cache, 1.10 GHz up to 2.60 GHz)",
+        "ram": "8GB DDR4, Storage: 256GB SSD",
+        "display": "14\" FHD (1920x1080)",
+        "features": "Bangla Keyboard, Type-C"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/walton/prelude-n41-pro/prelude-n41-pro-01-228x228.webp",
+      "image_sha256": "af0c3bd9cb7c48449c92fff79c61866854dcf7bfd94efa183f9a405e0fb280ea",
+      "observed_at": "2026-10-20T09:48:52.427123+00:00"
+    },
+    {
+      "name": "Walton Prelude N50 Pro Pentium Silver N5030 14\" FHD Laptop",
+      "brand": "Walton",
+      "url": "https://www.startech.com.bd/walton-prelude-n50-pro-pentium-silver-n5030-laptop",
+      "price": 31000.0,
+      "compare_price": 34500.0,
+      "image": "/uploads/products/catalog/a803c74e088b81238995.webp",
+      "specs": {
+        "processor": "Intel Pentium Silver N5030 (4MB Cache, 1.10 GHz up to 3.10 GHz)",
+        "ram": "8GB DDR4, Storage: 256GB SSD",
+        "display": "14\" FHD (1920x1080)",
+        "features": "Bangla Keyboard, Type-C"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/walton/prelude-n41-pro/prelude-n41-pro-01-228x228.webp",
+      "image_sha256": "af0c3bd9cb7c48449c92fff79c61866854dcf7bfd94efa183f9a405e0fb280ea",
+      "observed_at": "2026-10-20T09:48:52.441586+00:00"
+    },
+    {
+      "name": "Chuwi HeroBook Plus Intel N4020 15.6\" Inch FHD Laptop",
+      "brand": "Chuwi",
+      "url": "https://www.startech.com.bd/chuwi-herobook-plus-intel-n4020-laptop",
+      "price": 38000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/29a06cd23e192d687bba.webp",
+      "specs": {
+        "display": "15.6 Inch(1920 x 1080) IPS Anti-Glare Display",
+        "processor": "Intel Celeron N4020 (4M Cache, 1.10GHz - 2.80GHz)",
+        "ram": "8GB LPDDR4 RAM",
+        "storage": "256GB M.2SSD"
+      },
+      "site": "startech",
+      "cat_slug": "laptops",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop/chuwi/herobook-plus/herobook-plus-002-228x228.webp",
+      "image_sha256": "e6b3354b5435232de10b9e852383f70eeb3ae62a0f50810ab15223acade24b9c",
+      "observed_at": "2026-10-20T09:48:52.461209+00:00"
+    },
+    {
+      "name": "Walton Walpad 8G Pro",
+      "brand": "Walton",
+      "url": "https://www.startech.com.bd/walton-walpad-8g-pro",
+      "price": 16499.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/a667e52c8a158087db0b.webp",
+      "specs": {
+        "display": "8.68\" HD (800 x 1340) 90Hz Display",
+        "cpu": "MediaTek Helio G99 (6nm)",
+        "ram": "4GB/ 8GB Storage: 128GB",
+        "features": "6000mAh Battery, Type-C"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/walton/walpad-8g-pro/walpad-8g-pro-01-228x228.webp",
+      "image_sha256": "0c5d83290cc079b9cfdd131413bf970025d432b2b8f4689242efe724313bdb1a",
+      "observed_at": "2026-10-20T09:48:53.828189+00:00"
+    },
+    {
+      "name": "Teclast T70 Pro with Keyboard",
+      "brand": "Teclast",
+      "url": "https://www.startech.com.bd/teclast-t70-pro",
+      "price": 38500.0,
+      "compare_price": 39500.0,
+      "image": "/uploads/products/catalog/468a30d88d4697e279dd.webp",
+      "specs": {
+        "display": "14-inch, 2.2K(2240×1400), IPS, 60Hz",
+        "cpu": "Helio G100 octa-core, GPU: Arm Mali-G57 MC2",
+        "ram": "8GB, Storage: 128GB, Battery: 10000mAh"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/teclast/t70-pro/t70-pro-01-228x228.webp",
+      "image_sha256": "bf6421c5de106f30fc531721c371f11d68ec1295de9ec9d631e25665b4b16329",
+      "observed_at": "2026-10-20T09:48:53.834255+00:00"
+    },
+    {
+      "name": "Teclast P30T",
+      "brand": "Teclast",
+      "url": "https://www.startech.com.bd/teclast-p30t-tablet",
+      "price": 15000.0,
+      "compare_price": 16500.0,
+      "image": "/uploads/products/catalog/379b534648cdd1f39f56.webp",
+      "specs": {
+        "display": "10.1-inch, 1280×800 IPS",
+        "cpu": "Unisoc T7250 Octa-core, GPU: Arm G57",
+        "ram": "3GB, Storage: 128GB",
+        "battery": "6000mAh, Type-C Charging, Android 16"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/teclast/p30t-10-1-inch/p30t-10-1-inch-01-228x228.webp",
+      "image_sha256": "4ad73febe3ce5544c225d2a85570d0d6c066366cae20309b05672885afe36692",
+      "observed_at": "2026-10-20T09:48:53.840592+00:00"
+    },
+    {
+      "name": "HONOR Pad X7",
+      "brand": "Honor",
+      "url": "https://www.startech.com.bd/honor-pad-x7",
+      "price": 16500.0,
+      "compare_price": 16999.0,
+      "image": "/uploads/products/catalog/c2bcd114e822f800a552.webp",
+      "specs": {
+        "display": "8.7-inch TFT LCD, 800 x 1340 pixels, 90Hz",
+        "ram": "4GB Storage: 128GB ROM",
+        "cpu": "Qualcomm Snapdragon 680 (6 nm)",
+        "battery": "Li-ion 7020 mAh, 10W Wired Fast Charging"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/honor/pad-x7/pad-x7-01-228x228.webp",
+      "image_sha256": "22b4cd82e2cd2ee47e533c73bd3984518ba32b51c510f88357c2ff083c278640",
+      "observed_at": "2026-10-20T09:48:53.846947+00:00"
+    },
+    {
+      "name": "Teclast P30T 10.1 Inch Unisoc T606 Tablet with All-in-one KIT",
+      "brand": "Teclast",
+      "url": "https://www.startech.com.bd/teclast-p30t-10-1-inch-tablet",
+      "price": 20500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/eb4befc4f37518aa7048.webp",
+      "specs": {
+        "display": "10.1-inch, 1280×800 IPS",
+        "cpu": "Unisoc T606 Octa-core, GPU: Arm G57 MC01",
+        "ram": "3GB LPDDR5 , Storage: 128GB",
+        "battery": "6000mAh, Type-C Charging, Android 14"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/teclast/p30t-10-1-inch/p30t-10-1-inch-01-228x228.webp",
+      "image_sha256": "4ad73febe3ce5544c225d2a85570d0d6c066366cae20309b05672885afe36692",
+      "observed_at": "2026-10-20T09:48:53.854411+00:00"
+    },
+    {
+      "name": "Samsung Galaxy Tab A11 (Wi-Fi + SIM)",
+      "brand": "Samsung",
+      "url": "https://www.startech.com.bd/samsung-galaxy-tab-a11",
+      "price": 17400.0,
+      "compare_price": 20500.0,
+      "image": "/uploads/products/catalog/223bfaac1d01ff429483.webp",
+      "specs": {
+        "display": "8.7\" TFT LCD WXGA+ (1340 x 800)",
+        "processor": "Mediatek Helio G99 (6nm)",
+        "memory": "4GB RAM, 64 Storage",
+        "features": "Li-Po 5100 mAh, 15W Fast Charge"
+      },
+      "site": "startech",
+      "cat_slug": "tablets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/tablet/samsung/galaxy-tab-a11/galaxy-tab-a11-01-grey-228x228.webp",
+      "image_sha256": "5c7f0895661f7d54333563d5eb931374e22bd127e16734969ba817986a307daa",
+      "observed_at": "2026-10-20T09:48:53.859013+00:00"
+    },
+    {
+      "name": "iPhone 18 Pro",
+      "brand": "iPhone",
+      "url": "https://www.startech.com.bd/iphone-18-pro",
+      "price": 274999.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/9093236321e6f23ca8b8.webp",
+      "specs": {
+        "display": "6.3\" LTPO Super Retina XDR OLED, 120Hz, HDR10, Dolby Vision",
+        "processor": "A20 Pro Chip (2nm), 6-core CPU, 7-Core GPU",
+        "camera": "Triple 48MP + 48MP + 48MP on Back, 18MP on Front",
+        "features": "Face ID, USB Type-C, IP68, MagSafe Wireless Charging"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/apple/iphone-18-pro/18-pro-burgundy-official-04-228x228.webp",
+      "image_sha256": "edf60f5269a09b636394df84512aa19f4ca7be6165481b2375086deaf58dbe6b",
+      "observed_at": "2026-10-20T09:48:55.368220+00:00"
+    },
+    {
+      "name": "iPhone 18 Pro Max",
+      "brand": "iPhone",
+      "url": "https://www.startech.com.bd/iphone-18-pro-max",
+      "price": 273000.0,
+      "compare_price": 299999.0,
+      "image": "/uploads/products/catalog/df68618d20571c9977db.webp",
+      "specs": {
+        "display": "6.9\" LTPO Super Retina XDR OLED, 120Hz, HDR10, Dolby Vision",
+        "processor": "A20 Pro Chip (2nm), 6-core CPU, 7-Core GPU",
+        "camera": "Triple 48MP + 48MP + 48MP on Back, 18MP on Front",
+        "features": "Face ID, USB Type-C, IP68, MagSafe Wireless Charging"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/apple/iphone-18-pro-max/18-pro-max-burgundy-official-04-228x228.webp",
+      "image_sha256": "0a0476d46f331aabd46609897e8f45228a12918a2fa205e2bf5cffac826a021a",
+      "observed_at": "2026-10-20T09:48:55.377763+00:00"
+    },
+    {
+      "name": "ZTE nubia A36",
+      "brand": "ZTE",
+      "url": "https://www.startech.com.bd/zte-nubia-a36",
+      "price": 13300.0,
+      "compare_price": 14499.0,
+      "image": "/uploads/products/catalog/cae374d0025b8ea7d92e.webp",
+      "specs": {
+        "display": "6.75 inches HD+ 90Hz IPS LCD Display",
+        "processor": "Unisoc T7200 (12 nm)",
+        "camera": "Dual 13 on Rear, 5 MP on Front",
+        "features": "5000mAh Battery, Type-C Charging"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/zte/blade-a36/nubia-a36-green-official-02-228x228.webp",
+      "image_sha256": "d57eeca21752e84bb3b7527d9276b18e0d00898e053436ee36fba9a0f362c76a",
+      "observed_at": "2026-10-20T09:48:55.382699+00:00"
+    },
+    {
+      "name": "Realme Note 60x",
+      "brand": "Realme",
+      "url": "https://www.startech.com.bd/realme-note-60x",
+      "price": 15999.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/5f0fd78ab4a4cf5e7277.webp",
+      "specs": {
+        "display": "6.74” HD+ 90Hz IPS Eye Comfort Display",
+        "processor": "Unisoc Tiger T612 (12 nm)",
+        "camera": "8MP on Rear, 5MP on Front",
+        "features": "IP54, Drop Resistance, 5000 mAh Battery"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/realme/note-60x/note-60x-wilderness-green-001-228x228.webp",
+      "image_sha256": "07de7a660d5e8e94bd314b3d43808180e6d10cd5b36d76a165948958afacd08d",
+      "observed_at": "2026-10-20T09:48:55.386660+00:00"
+    },
+    {
+      "name": "Tecno Spark Go 3",
+      "brand": "Tecno",
+      "url": "https://www.startech.com.bd/tecno-spark-go-3",
+      "price": 16200.0,
+      "compare_price": 16999.0,
+      "image": "/uploads/products/catalog/204245a48338c142db77.webp",
+      "specs": {
+        "display": "6.75\" HD+ IPS 120hz Display",
+        "processor": "Unisoc T7250 (12 nm),",
+        "camera": "13MP Rear with Dual Flash, 8MP Front with Flash",
+        "features": "Side Mounted Fingerprint, IP64 water resistance"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/tecno/spark-go-3/spark-go-3-ink-black-official-02-228x228.webp",
+      "image_sha256": "25a28c955f0eff76125e29d51e5f2dd97f95a83f8741621f08b82ebb6cfee128",
+      "observed_at": "2026-10-20T09:48:55.391342+00:00"
+    },
+    {
+      "name": "ZTE nubia A57",
+      "brand": "ZTE",
+      "url": "https://www.startech.com.bd/zte-nubia-a57",
+      "price": 15800.0,
+      "compare_price": 16999.0,
+      "image": "/uploads/products/catalog/27628fa6e678a2e35c02.webp",
+      "specs": {
+        "display": "6.75-inch HD+ IPS LCD 120Hz Display",
+        "processor": "Unisoc T7250, Octa Core",
+        "camera": "13MP Rear, 8MP Front",
+        "features": "22.5W Charger Side-Mounted Fingerprint"
+      },
+      "site": "startech",
+      "cat_slug": "phones",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mobile/zte/nubia-a57/nubia-a57-orange-official-01-228x228.webp",
+      "image_sha256": "283ee952552f9f7ed62d59b4a5c34a17962b5ca27fd94f4cb660b9463c581ab5",
+      "observed_at": "2026-10-20T09:48:55.396662+00:00"
+    },
+    {
+      "name": "Gigasonic RDA-1707W 17 Inch LED Square Monitor",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-rda-1707w-monitor",
+      "price": 4300.0,
+      "compare_price": 5200.0,
+      "image": "/uploads/products/catalog/eaabd0c83ed227042508.webp",
+      "specs": {
+        "maximum_resolution": "1600 x 900p",
+        "display": "LED, 60Hz, 5ms",
+        "ports": "1x HDMI, 1x VGA",
+        "color_support": "16.7 million colors with the use of FRC"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/rda-1705m/rda-1705m-01-228x228.webp",
+      "image_sha256": "1a0a69959dbeec5d26c502356918bdc15f0ce8f711b5540679397b87161dcb16",
+      "observed_at": "2026-10-20T09:48:56.943351+00:00"
+    },
+    {
+      "name": "Gigasonic RB-G185S-300C 18.5\" HD LED Monitor",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-rb-g185s-300c-monitor",
+      "price": 4999.0,
+      "compare_price": 5900.0,
+      "image": "/uploads/products/catalog/74b33ae871d007b5e646.webp",
+      "specs": {
+        "resolution": "HD (1366 × 768)",
+        "display": "LED, 60Hz, 5ms",
+        "ports": "1x HDMI, 1x VGA",
+        "aspect_ratio": "16.9, Brightness: 200 nits"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/rb-g195s-300c/rb-g195s-300c-228x228.webp",
+      "image_sha256": "4612fbee08b1bff0c45eb1141406f8fb640e6bffb4ecfd48d7fc072f24ba9642",
+      "observed_at": "2026-10-20T09:48:56.949957+00:00"
+    },
+    {
+      "name": "Gigasonic RB-G20S-400C 20 Inch HD LED Monitor",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-rb-g20s-400c-monitor",
+      "price": 5200.0,
+      "compare_price": 6100.0,
+      "image": "/uploads/products/catalog/39c3e440fc93b5fb8e70.webp",
+      "specs": {
+        "resolution": "HD (1366×768 )",
+        "display": "LED, 60Hz, 5ms",
+        "ports": "1x HDMI, 1x VGA",
+        "color_support": "16.7 million (6 bits +2 bits scalar FRC)"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/rb-g19s-400c/rb-g19s-400c-228x228.webp",
+      "image_sha256": "8aa122f9ab72d3228791e48d646959da8343172ddd167f012700d0503fee3e25",
+      "observed_at": "2026-10-20T09:48:56.954752+00:00"
+    },
+    {
+      "name": "Gigasonic RB-G215S-400C 21.5\" FHD LED Monitor",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-rb-g215s-400c-monitor",
+      "price": 6400.0,
+      "compare_price": 6700.0,
+      "image": "/uploads/products/catalog/528ab2281bce3b8c1337.webp",
+      "specs": {
+        "resolution": "FHD (1920 × 1080)",
+        "display": "LED, 60Hz, 5ms",
+        "ports": "1x HDMI, 1x VGA",
+        "features": "Eye-Comfort Mode, Anti-Glare Coating"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/gs-21-5m/gs-21-5m-228x228.webp",
+      "image_sha256": "50b3f01dab9639f7bf5f6c0059d1297e21a48e9ac85b87c27327dd44a5e8674f",
+      "observed_at": "2026-10-20T09:48:56.959955+00:00"
+    },
+    {
+      "name": "Gigasonic GS-21.5FHD500S9 21.5\" 75Hz FHD IPS Gaming Monitor",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-gs-215fhd500s9-75hz-monitor",
+      "price": 7500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/c5d04f64afb4eda6ac6d.webp",
+      "specs": {
+        "resolution": "FHD (1920 × 1080)",
+        "display": "IPS, 75Hz, 5ms (GTG)",
+        "ports": "1x HDMI, 1x VGA",
+        "features": "Flicker-Free, Low Blue Light"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/gs-215fhd500s9-75hz/gs-215fhd500s9-75hz-11-01-228x228.webp",
+      "image_sha256": "e7d73ff0d6259cedc9da9c2a3f50bb880001ef8a008131a0804ca120e037c64b",
+      "observed_at": "2026-10-20T09:48:56.966005+00:00"
+    },
+    {
+      "name": "Gigasonic GS-21.5FHD500S9 21.5\" 75Hz FHD IPS Gaming Monitor White",
+      "brand": "Gigasonic",
+      "url": "https://www.startech.com.bd/gigasonic-gs-215fhd500s9-75hz-monitor-white",
+      "price": 7500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/1e2bd14e36c8cbb0a981.webp",
+      "specs": {
+        "resolution": "FHD (1920 × 1080)",
+        "display": "IPS, 75Hz, 5ms (GTG)",
+        "ports": "1x HDMI, 1x VGA",
+        "features": "Flicker-Free, Low Blue Light"
+      },
+      "site": "startech",
+      "cat_slug": "monitors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/monitor/gigasonic/gs-215fhd500s9/gs-215fhd500s9-white-01-228x228.webp",
+      "image_sha256": "c33a8d3d0ff8673d94acc0ed018d3cad714c1234e1a659399bd438388abc0215",
+      "observed_at": "2026-10-20T09:48:56.973334+00:00"
+    },
+    {
+      "name": "AMD Ryzen 3 2200G Quad-Core Processor With Radeon Vega 8 Graphics",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-3-2200g-processor",
+      "price": 3999.0,
+      "compare_price": 4300.0,
+      "image": "/uploads/products/catalog/9f334f46c8e84d26d088.webp",
+      "specs": {
+        "speed": "3.5GHz Up to 3.7GHz",
+        "cache": "L1 384KB, L2 2MB L3 4MB"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/AMD/ryzen-3/ryzen-3-228x228.jpg",
+      "image_sha256": "0525ca33fdb4b947d3c42fe4c1635f4aaaaeb7d149139fe161514b3de9f5d42f",
+      "observed_at": "2026-10-20T09:48:58.302689+00:00"
+    },
+    {
+      "name": "AMD Ryzen 5 2400G Desktop Processor with Radeon RX Vega 11 Graphics",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-5-2400g-processor",
+      "price": 5900.0,
+      "compare_price": 6300.0,
+      "image": "/uploads/products/catalog/099c6381957eaa2a3569.webp",
+      "specs": {
+        "speed": "3.6GHz Up To 3.9GHz",
+        "cache": "L1 384KB L2 2MB L3 4MB"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/amd/ryzen-5-2400g/ryzen-5-2400g-001-228x228.webp",
+      "image_sha256": "b1198beb1d2e4f8b8245e47aba3b3b3a946ef22f30b306d0f8a7e31343112d96",
+      "observed_at": "2026-10-20T09:48:58.306231+00:00"
+    },
+    {
+      "name": "AMD Ryzen 5 Pro 2400GE Desktop Processor with Radeon RX Vega 11 Graphics",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-5-pro-2400ge-processor",
+      "price": 5900.0,
+      "compare_price": 6500.0,
+      "image": "/uploads/products/catalog/1462f993e33b0b1ffad6.webp",
+      "specs": {
+        "speed": "3.2GHz Up To 3.8GHz",
+        "cache": "L1 384KB L2 2MB L3 4MB"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/amd/ryzen-5-2400g/ryzen-5-2400g-001-228x228.webp",
+      "image_sha256": "b1198beb1d2e4f8b8245e47aba3b3b3a946ef22f30b306d0f8a7e31343112d96",
+      "observed_at": "2026-10-20T09:48:58.309318+00:00"
+    },
+    {
+      "name": "AMD Ryzen 3 3200G Processor with Radeon RX Vega 8 Graphics",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-3-3200g",
+      "price": 6500.0,
+      "compare_price": 7100.0,
+      "image": "/uploads/products/catalog/2e43fa23551c613647dc.webp",
+      "specs": {
+        "speed": "3.6 GHz up to 4.0 GHz",
+        "memory_speed": "Up to 2933MHz"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/amd/ryzen-3-3200g/ryzen-3-3200g-3-228x228.jpg",
+      "image_sha256": "57cfb5ddbf07504831ddc535ad1c26b1c8b24c8475b7cc39a3ff89aa217c7220",
+      "observed_at": "2026-10-20T09:48:58.313234+00:00"
+    },
+    {
+      "name": "AMD Ryzen 5 3400G Processor with Radeon RX Vega 11 Graphics",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-5-3400g-processor",
+      "price": 6900.0,
+      "compare_price": 7500.0,
+      "image": "/uploads/products/catalog/ae199547c4b4b4b4d1f0.webp",
+      "specs": {
+        "speed": "3.7GHz up to 4.2GHz",
+        "cache": "L2: 2MB, L3: 4MB",
+        "memory_speed": "Up to 2933MHz"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/amd/ryzen-5-3400g/3400g-228x228.jpg",
+      "image_sha256": "e13a0a70488450e39b3640c07ff2e2e14793dfc5660793e2e2d10623123fac19",
+      "observed_at": "2026-10-20T09:48:58.319788+00:00"
+    },
+    {
+      "name": "AMD Ryzen 3 4100 Processor",
+      "brand": "AMD",
+      "url": "https://www.startech.com.bd/amd-ryzen-3-4100-processor",
+      "price": 8700.0,
+      "compare_price": 10000.0,
+      "image": "/uploads/products/catalog/0ba9c6c8229bcb953c95.webp",
+      "specs": {
+        "clock_speed": "3.8GHz; Up to 4.0GHz",
+        "l1_cache": "256KB; L2 Cache: 2MB; L3 Cache: 4MB",
+        "cpu_socket": "AM4"
+      },
+      "site": "startech",
+      "cat_slug": "processors",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/processor/AMD/ryzen-3-4100/amd-ryzen-3-4100-01-228x228.jpg",
+      "image_sha256": "0fca0c4186a001f76850c5816ea3f3dbb8dee7a58d3f8db50f2227b507dd5b42",
+      "observed_at": "2026-10-20T09:48:58.327143+00:00"
+    },
+    {
+      "name": "AFOX NVIDIA GeForce GT 240 1GB GDDR3 Graphics Card",
+      "brand": "AFOX",
+      "url": "https://www.startech.com.bd/afox-gt-240-1gb-graphics-card",
+      "price": 5000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/b399fad8db0daaf81ee9.webp",
+      "specs": {
+        "video_memory": "1024MB GDDR3",
+        "engine_clock": "550 MHz, Memory Clock: 1400 MHz",
+        "resolution": "2560 x 1600",
+        "interface": "1 x DVI, 1 x HDMI, 1 x D-Sub"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/afox/gt-240/gt-240-01-228x228.webp",
+      "image_sha256": "068bdadada97bbdd92c3dfa94bbdbac00b52a19f547d4e239589bfe2c1c89623",
+      "observed_at": "2026-10-20T09:48:59.809322+00:00"
+    },
+    {
+      "name": "AFOX NVIDIA GeForce GT 610 2GB GDDR3 Graphics Card",
+      "brand": "AFOX",
+      "url": "https://www.startech.com.bd/afox-gt-610-2gb-graphics-card",
+      "price": 5500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/1badfb333bce29c56ee1.webp",
+      "specs": {
+        "video_memory": "2048MB GDDR3",
+        "engine_clock": "810 MHz, Memory Clock: 1333 MHz",
+        "resolution": "2560 x 1600",
+        "interface": "1 x DVI, 1 x HDMI, 1 x D-Sub"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/afox/gt-610/gt-610-01-228x228.webp",
+      "image_sha256": "5beacb42e5eb8c7613b106a531958380324b2b091c15079d2f0a4c387e960a16",
+      "observed_at": "2026-10-20T09:48:59.815330+00:00"
+    },
+    {
+      "name": "PELADN GeForce KaiTian GT 730 4GB GDDR3 Graphics Card",
+      "brand": "PELADN",
+      "url": "https://www.startech.com.bd/peladn-geforce-kaitian-gt-730-4gd3-graphics-card",
+      "price": 5999.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/9dc973ceec531ac70a6a.webp",
+      "specs": {
+        "video_memory": "4GB GDDR3",
+        "cuda_cores": "192",
+        "memory_clock_speed": "902 MHz",
+        "memory_frequency": "1300 MHz"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/peladn/geforce-kaitian-gt-730/geforce-kaitian-gt-730-3-228x228.webp",
+      "image_sha256": "f29f250709bb30faa331e131b41c5adc112e494ab7a6b6aef5895e6f54d7b70f",
+      "observed_at": "2026-10-20T09:48:59.818968+00:00"
+    },
+    {
+      "name": "AFOX NVIDIA GeForce GT 710 2GB GDDR3 Graphics Card",
+      "brand": "AFOX",
+      "url": "https://www.startech.com.bd/afox-gt-710-2gb-graphics-card",
+      "price": 6500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/df2603c9097dcfd04cbb.webp",
+      "specs": {
+        "video_memory": "2048MB GDDR3",
+        "base_clock": "954 MHz, Memory Clock: 1600 MHz",
+        "resolution": "2048 x1536",
+        "interface": "1 x DVI, 1 x HDMI, 1 x D-Sub"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/afox/gt-710/afox-gt-710-2gb-06-228x228.webp",
+      "image_sha256": "677ec52ca52b9fd2e5cebce0d7e94f5fae411d3313308181633a2d924a9e2365",
+      "observed_at": "2026-10-20T09:48:59.822091+00:00"
+    },
+    {
+      "name": "AFOX NVIDIA GeForce GT 710 2GB GDDR3 Graphics Card with Fan",
+      "brand": "AFOX",
+      "url": "https://www.startech.com.bd/afox-gt-710-2gb-graphics-card-with-fan",
+      "price": 6500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/3904ef5dff94b25794f6.webp",
+      "specs": {
+        "video_memory": "2048MB GDDR3",
+        "base_clock": "954 MHz, Memory Clock: 1333 MHz",
+        "resolution": "2048 x1536",
+        "interface": "1 x DVI, 1 x HDMI, 1 x D-Sub"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/afox/gt-710/gt-710-01-228x228.webp",
+      "image_sha256": "c3e53cf434ee85f0459d8e915cbc7c9b12e0ae34b93faa806fe13583f23d1345",
+      "observed_at": "2026-10-20T09:48:59.825753+00:00"
+    },
+    {
+      "name": "OCPC GeForce GT 730 4GB DDR3 Graphics Card",
+      "brand": "OCPC",
+      "url": "https://www.startech.com.bd/ocpc-geforce-gt-730-4gb-graphics-card",
+      "price": 8100.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/a8beef11c197107c7ba6.webp",
+      "specs": {
+        "boost_clock": "700 MHz, Base Clock: 700 MHz",
+        "cuda_cores": "384, Memory Interface: 128-bit",
+        "width": "Single Slot",
+        "outputs": "1x HDMI, 1x DVI, 1x VGA"
+      },
+      "site": "startech",
+      "cat_slug": "graphics-cards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/graphics-card/ocpc/gt-730/gt-730-01-228x228.webp",
+      "image_sha256": "a01e3a2472b5d97d62521bce154da2b9697f0ebd7c94e5083a08a6c60e74afec",
+      "observed_at": "2026-10-20T09:48:59.829921+00:00"
+    },
+    {
+      "name": "OCPC VS 8GB DDR3 1600MHz Desktop RAM",
+      "brand": "OCPC",
+      "url": "https://www.startech.com.bd/ocpc-vs-8gb-ddr3-ram",
+      "price": 3150.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/9f1358df04ed956245ed.webp",
+      "specs": {
+        "capacity": "8GB, Type: DDR3",
+        "frequency": "1600MHz, Voltage: 1.5V",
+        "latency": "CL11-11-11-28"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/ocpc/vs-8gb-1600mhz/vs-8gb-1600mhz-01-228x228.webp",
+      "image_sha256": "65c0f0bea741a07e8b7df5c82a10241b88886658f6513ab5841e57a1035c9f6c",
+      "observed_at": "2026-10-20T09:49:01.386381+00:00"
+    },
+    {
+      "name": "Netac Basic DDR3 8GB 1600MHZ Desktop RAM",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-basic-ddr3-8gb-1600mhz-desktop-ram",
+      "price": 2800.0,
+      "compare_price": 3900.0,
+      "image": "/uploads/products/catalog/8d4a30b7ae9f401ea049.webp",
+      "specs": {
+        "capacity": "8GB",
+        "frequency": "DDR3 1600MHz",
+        "form_factor": "240-Pin UDIMM",
+        "voltage_cas_latency": "1.5V/11-11-11-28"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/netac/basic-ddr3-4gb-1600mhz/basic-ddr3-4gb-1600mhz-01-228x228.webp",
+      "image_sha256": "f032534da403aed15c8aa1f8064a66c6921be5379b2c7ff37393fa2c11a58376",
+      "observed_at": "2026-10-20T09:49:01.389500+00:00"
+    },
+    {
+      "name": "Netac Basic 4GB DDR4 2666MHZ Desktop RAM",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-basic-4gb-ddr4-2666mhz-desktop-ram",
+      "price": 3900.0,
+      "compare_price": 3950.0,
+      "image": "/uploads/products/catalog/37fd294b5d8178475129.webp",
+      "specs": {
+        "capacity": "4GB",
+        "frequency": "DDR4 2666MHz",
+        "form_factor": "288-Pin UDIMM",
+        "voltage_cas_latency": "1.2V/19-19-19-43"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/netac/basic-4gb-ddr4-2666mhz/basic-4gb-ddr4-2666mhz-01-228x228.webp",
+      "image_sha256": "a475cf702e96679c1d870812970e8e1c5d1bbdbcb359f5a40997c832b30de31d",
+      "observed_at": "2026-10-20T09:49:01.392163+00:00"
+    },
+    {
+      "name": "Netac Basic 8GB DDR4 2666MHZ Desktop RAM",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-basic-8gb-ddr4-2666mhz-desktop-ram",
+      "price": 6500.0,
+      "compare_price": 6600.0,
+      "image": "/uploads/products/catalog/b434f502ef89f529759e.webp",
+      "specs": {
+        "capacity": "8GB",
+        "frequency": "DDR4 2666MHz",
+        "form_factor": "288-Pin UDIMM",
+        "voltage_cas_latency": "1.2V/19-19-19-43"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/netac/basic-4gb-ddr4-2666mhz/basic-4gb-ddr4-2666mhz-01-228x228.webp",
+      "image_sha256": "a475cf702e96679c1d870812970e8e1c5d1bbdbcb359f5a40997c832b30de31d",
+      "observed_at": "2026-10-20T09:49:01.395320+00:00"
+    },
+    {
+      "name": "Netac Shadow III 8GB DDR4 3200MHz Desktop RAM",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-shadow-iii-8gb-ddr4-3200mhz-ram",
+      "price": 7500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/330654eb918132d1dfa1.webp",
+      "specs": {
+        "capacity": "8GB, Type: DDR4",
+        "frequency": "3200 MHz",
+        "form_factor": "288-Pin UDIMM",
+        "voltage_cas_latency": "1.35V/CL16"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/netac/shadow-iii/shadow-iii-01-228x228.webp",
+      "image_sha256": "704de3b3d9e81422e230f43125570ef7179a642bd60a3d1a7fa20a51693da9e8",
+      "observed_at": "2026-10-20T09:49:01.397657+00:00"
+    },
+    {
+      "name": "AITC Kingsman Innovator 8GB DDR4 3200MHz Desktop RAM Black",
+      "brand": "AITC",
+      "url": "https://www.startech.com.bd/aitc-kingsman-innovator-8gb-ddr4-3200mhz-ram",
+      "price": 7500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/1bb9a0a85670b5d85955.webp",
+      "specs": {
+        "memory_capacity": "8GB",
+        "memory_type": "DDR4",
+        "memory_frequency": "3200 MHz",
+        "latency": "CL16"
+      },
+      "site": "startech",
+      "cat_slug": "ram",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ram/aitc/kingsman-innovator/kingsman-innovator-black-228x228.webp",
+      "image_sha256": "1abea01cc44b418629f91406fc90b78498822dcc1eb2977722fde00ed00de9e5",
+      "observed_at": "2026-10-20T09:49:01.400754+00:00"
+    },
+    {
+      "name": "Netac SA500 128GB 2.5-inch SATAIII SSD",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-sa500-128-gb-ssd",
+      "price": 3400.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/6c2db135ce2526c29de1.webp",
+      "specs": {
+        "capacity": "128GB",
+        "interface": "SATA III, 6.0 GB/s",
+        "form_factor": "2.5 inch",
+        "read": "500 MB/s, Write: 400 MB/s"
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/netac/ls-ne-sa500/ls-ne-sa500-01-228x228.webp",
+      "image_sha256": "720e03ed1157300ef36477b3681b0652ff504bc0a0c30996aa527af389eb77b9",
+      "observed_at": "2026-10-20T09:49:03.396817+00:00"
+    },
+    {
+      "name": "Netac N535S 120GB 2.5-inch SATAIII SSD",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-n535s-120gb-ssd",
+      "price": 3450.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/73f9dcf53487985a37ad.webp",
+      "specs": {
+        "read_speed": "510MB/s",
+        "write_speed": "440MB/s",
+        "interface": "SATA III",
+        "form_factor": "2.5\""
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/netac/n535s/n535s-001-228x228.jpg",
+      "image_sha256": "cd1c5b9fbedb107e373c8bb17bc38d75e918893688806685260d7c9311422412",
+      "observed_at": "2026-10-20T09:49:03.417517+00:00"
+    },
+    {
+      "name": "Netac N600S 128GB 2.5-inch SATAIII SSD",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-n600s-128gb-2-5-inch-sataiii-ssd",
+      "price": 3200.0,
+      "compare_price": 3700.0,
+      "image": "/uploads/products/catalog/3b76a37addd08ab81f13.webp",
+      "specs": {
+        "capacity": "128GB, Form Factor: 2.5-inch",
+        "interface": "SATAIII 6Gb/s",
+        "read_speed": "Up to 560MB/s",
+        "write_speed": "Up to 490MB/s"
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/netac/n600s/n600s-01-228x228.webp",
+      "image_sha256": "e0e264f4cc832e3af23a7763e2f20382173c092cc713cc70efeb635616f0b55f",
+      "observed_at": "2026-10-20T09:49:03.423475+00:00"
+    },
+    {
+      "name": "TwinMOS Hyper H2 Ultra 128GB 2.5 Inch SATA III SSD",
+      "brand": "TwinMOS",
+      "url": "https://www.startech.com.bd/twinmos-hyper-h2-ultra-128gb-ssd",
+      "price": 3700.0,
+      "compare_price": 3750.0,
+      "image": "/uploads/products/catalog/4fa4de33eb24d424c629.webp",
+      "specs": {
+        "interface": "SATA III 6Gb/s",
+        "form_factor": "2.5 Inch",
+        "read_speed": "Up to 580 MB/s",
+        "write_speed": "Up to 550 MB/s"
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/twinmos/hyper-h2-ultra/hyper-h2-001-228x228.webp",
+      "image_sha256": "73955aacacd796346527954286de389e66558bcd7248bf0133e0c1e1bf14d076",
+      "observed_at": "2026-10-20T09:49:03.430510+00:00"
+    },
+    {
+      "name": "Netac N930E Pro 128GB NVMe M.2 2280 SSD",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-n930e-pro-128gb-ssd",
+      "price": 4000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/8fd0cd4d45054f825f78.webp",
+      "specs": {
+        "interface": "PCI-E",
+        "capacity": "128GB",
+        "read_speed": "970MB/s",
+        "write_speed": "650 MB/s"
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/netac/n930e-pro-128gb/n930e-pro-128gb-228x228.jpg",
+      "image_sha256": "87834ef547550914d775d1ba176579537434ce31bbd0b1dc3e4e238360eb212e",
+      "observed_at": "2026-10-20T09:49:03.443176+00:00"
+    },
+    {
+      "name": "Netac N930ES 128GB M.2 NVMe PCIe 2242 SSD",
+      "brand": "Netac",
+      "url": "https://www.startech.com.bd/netac-n930es-128gb-m-2-nvme-pcie-ssd",
+      "price": 3800.0,
+      "compare_price": 4500.0,
+      "image": "/uploads/products/catalog/ce0e3c130dbc4a1edcec.webp",
+      "specs": {
+        "interface": "PCIe Gen3x2",
+        "capacity": "128GB",
+        "read_speed": "Up to 970MB/s",
+        "write_speed": "Up to 635MB/s"
+      },
+      "site": "startech",
+      "cat_slug": "storage",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/ssd/netac/n930es/n930es-01-228x228.webp",
+      "image_sha256": "44894f2749b5d96e48ccdeebf5322f2ca2df5e7a10eae46181418965c4209f08",
+      "observed_at": "2026-10-20T09:49:03.459475+00:00"
+    },
+    {
+      "name": "XENTHRA XN-H81M-VH 4th Gen mATX Motherboard",
+      "brand": "XENTHRA",
+      "url": "https://www.startech.com.bd/xenthra-xn-h81m-vh-motherboard",
+      "price": 4200.0,
+      "compare_price": 4500.0,
+      "image": "/uploads/products/catalog/9aa7f98df43f69ce68eb.webp",
+      "specs": {
+        "supported_cpu": "4th Generation Intel Core processors (LGA1150)",
+        "supported_ram": "2x DDR3 DIMM up to 16 GB 1600MHz",
+        "graphics_output": "1 x VGA, 1 x HDMI",
+        "features": "1x RJ45 Gigabit LAN"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/xenthra/xn-h81m-vh/xn-h81m-vh-01-228x228.webp",
+      "image_sha256": "1cd3f2b8a7d9f37ca4cffbbf51980fc77eb0b36e10612f604e38a977181f89dc",
+      "observed_at": "2026-10-20T09:49:04.527155+00:00"
+    },
+    {
+      "name": "ASRock A520M-HVS AMD AM4 Micro ATX Motherboard",
+      "brand": "ASRock",
+      "url": "https://www.startech.com.bd/asrock-a520m-hvs-motherboard",
+      "price": 6500.0,
+      "compare_price": 7500.0,
+      "image": "/uploads/products/catalog/69f90ae97dd6f132d79f.webp",
+      "specs": {
+        "supported_cpu": "AM4 Socket Ryzen 3000, 4000 G & 5000 & 5000 G-Series",
+        "supported_ram": "2 x DDR4, 4733+ (OC)",
+        "graphics_output": "D-Sub, HDMI",
+        "features": "1 x Ultra M.2, Realtek Gigabit LAN"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/asrock/a520m-hvs/a520m-hvs-01-228x228.webp",
+      "image_sha256": "f92d04e162078d478007e66f6232d00e1e2edfab3b5d9a4514875c94b9e4ef72",
+      "observed_at": "2026-10-20T09:49:04.535363+00:00"
+    },
+    {
+      "name": "XENTHRA XN-B450M-VH-PRO AMD AM4 mATX Motherboard",
+      "brand": "XENTHRA",
+      "url": "https://www.startech.com.bd/xenthra-xn-b450m-vh-pro-motherboard",
+      "price": 7200.0,
+      "compare_price": 7600.0,
+      "image": "/uploads/products/catalog/3ee63bf89f2397a6e395.webp",
+      "specs": {
+        "supported_cpu": "Ryzen 1000/2000/3000/4000/5000 Series Processors",
+        "supported_ram": "2x DDR4, up to 3200 (OC) MHz",
+        "graphics_output": "1 x HDMI, 1x VGA",
+        "features": "1 x M.2 , 1x RJ45 Gigabit Ethernet LAN"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/xenthra/xn-b450m-vh-pro/xn-b450m-vh-pro-01-228x228.webp",
+      "image_sha256": "2a2e4e3f2c58764fb5a15b1a0c6b0267960077a6ce357da7d5289e80894adfb5",
+      "observed_at": "2026-10-20T09:49:04.541380+00:00"
+    },
+    {
+      "name": "MSI A520M-A Pro AMD AM4 Micro-ATX Motherboard",
+      "brand": "MSI",
+      "url": "https://www.startech.com.bd/msi-a520m-a-pro-motherboard",
+      "price": 7800.0,
+      "compare_price": 8300.0,
+      "image": "/uploads/products/catalog/a5e3502a503385c3d6f5.webp",
+      "specs": {
+        "supported_cpu": "Ryzen 3000/ 4000G / 5000 Series for Socket AM4",
+        "supported_ram": "2x DDR4, up to 4600MHz (OC), Max. 64GB",
+        "graphics_output": "1x HDMI 2.1, 1x DVI-D",
+        "features": "1x M.2, Realtek RTL8111H Gigabit LAN"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/msi/a520m-a-pro/a520m-a-pro-228x228.jpg",
+      "image_sha256": "1f3d62ac3a4a1d2a6442e94b4b362628e6baf701b98b9631b47fadb284294010",
+      "observed_at": "2026-10-20T09:49:04.546981+00:00"
+    },
+    {
+      "name": "GIGABYTE A520M K V2 AM4 Micro ATX Motherboard",
+      "brand": "Gigabyte",
+      "url": "https://www.startech.com.bd/gigabyte-a520m-k-v2-motherboard",
+      "price": 8200.0,
+      "compare_price": 8500.0,
+      "image": "/uploads/products/catalog/a13a36891b9885a661e2.webp",
+      "specs": {
+        "supported_cpu": "Ryzen 5000/ 5000G/4000G/ 3000/3000G Series CPU for AM4 Socket",
+        "supported_ram": "2 x DDR4, up to 64GB, 5100(O.C.)",
+        "graphics_output": "1 x HDMI, 1x D-Sub",
+        "features": "1 x M.2 Slot, Realtek GbE LAN"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/gigabyte/a520m-k-v2/a520m-k-v2-01-228x228.webp",
+      "image_sha256": "56695a9c054157dc58195113eaf1d39eba8041ee3c8cdfcc5e87defc2816de39",
+      "observed_at": "2026-10-20T09:49:04.552323+00:00"
+    },
+    {
+      "name": "Asus PRIME A520M-R AM4 micro ATX Motherboard",
+      "brand": "ASUS",
+      "url": "https://www.startech.com.bd/asus-prime-a520m-r-motherboard",
+      "price": 8700.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/5a25fa0fabd52cc76809.webp",
+      "specs": {
+        "cpu": "AMD AM4 Socket for AMD Ryzen 5000 / 4000 / 3000 Series",
+        "supported_ram": "2 x DIMM ,Max 64GB,  Up to 5100(OC)",
+        "output": "1 x HDMI",
+        "features": "1 x M.2, 4 x SATA 6Gb/s ports"
+      },
+      "site": "startech",
+      "cat_slug": "motherboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/motherboard/msi/prime-a520m-r/prime-a520m-r-01-228x228.webp",
+      "image_sha256": "31f6f51af0261b297eec0d9c0332b20e40f5fcfdd281e6230ddc3b372b9bbd1f",
+      "observed_at": "2026-10-20T09:49:04.555507+00:00"
+    },
+    {
+      "name": "MaxGreen Power Wave 230W Power Supply",
+      "brand": "MaxGreen",
+      "url": "https://www.startech.com.bd/maxgreen-power-wave-230w-power-supply",
+      "price": 1300.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/69243067c17bebdd89cb.webp",
+      "specs": {
+        "output_power": "230W",
+        "fans": "120mm Silent Fan, Form Factor: ATX",
+        "interface": "2x SATA, 2x Molex, 1x Main",
+        "protections": "OVP, UVP, OPP, SCP, OCP"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/maxgreen/power-wave-230w/power-wave-230w-01-228x228.webp",
+      "image_sha256": "0a167444729f8620a335addff5a983b087ef3ff07acf81ea5518a92d5bbb8e02",
+      "observed_at": "2026-10-20T09:49:06.164786+00:00"
+    },
+    {
+      "name": "T-Wolf ATX 350W Grey Power Supply With Cable",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-atx-350w-grey-power-supply",
+      "price": 1250.0,
+      "compare_price": 1400.0,
+      "image": "/uploads/products/catalog/4d9a933503c0834e9586.webp",
+      "specs": {
+        "output_capacity": "350 Watts",
+        "frequency": "50-60Hz",
+        "sata": "650MM Black Cable",
+        "protective_function": "OCP/SIP/OPP/SCP"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/t-wolf/atx-350w-grey/atx-350w-grey-01-228x228.webp",
+      "image_sha256": "215a432515eea14be6eace2ab4cf7b8966cd31ff0e28b0aa66991b5fe080e2c3",
+      "observed_at": "2026-10-20T09:49:06.168618+00:00"
+    },
+    {
+      "name": "MaxGreen Standard Series 200W Power Supply",
+      "brand": "MaxGreen",
+      "url": "https://www.startech.com.bd/maxgreen-standard-series-200w-power-supply",
+      "price": 1200.0,
+      "compare_price": 1500.0,
+      "image": "/uploads/products/catalog/f79600f75b100e0ca1f9.webp",
+      "specs": {
+        "maximum_power": "200 Watt (Max 230W)",
+        "fans": "80mm Silent Fan, Form Factor: ATX",
+        "input_voltage": "230V with 110/230V switchable",
+        "interface": "2x SATA, 2x Molex, 1x CPU, 1x Main"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/maxgreen/standard-series-200w/standard-series-200w-01-228x228.webp",
+      "image_sha256": "1d80350c1b4f1fc3065405dbe47fac91a4fbee2b4d074592f30fe01e5e80c058",
+      "observed_at": "2026-10-20T09:49:06.172005+00:00"
+    },
+    {
+      "name": "Solitine STN-SP350WB 350W Power Supply",
+      "brand": "Solitine",
+      "url": "https://www.startech.com.bd/solitine-stn-sp350wb-350w-power-supply",
+      "price": 2175.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/c2f936afe0a0ca714173.webp",
+      "specs": {
+        "power_output": "350W",
+        "input_voltage": "AC 220V",
+        "cooling_fan": "12 cm Fan",
+        "main_connector": "20+4 Pin (650mm)"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/solitine/stn-sp350wb/stn-sp350wb-01-228x228.webp",
+      "image_sha256": "09c9dc2789aef06c42134fe311e329fda7fd2c3c7dd59ca75d666ea767dd1aee",
+      "observed_at": "2026-10-20T09:49:06.175298+00:00"
+    },
+    {
+      "name": "1STPlayer PS-300FK Non Modular Power Supply",
+      "brand": "1STPlayer",
+      "url": "https://www.startech.com.bd/1stplayer-ps-300fk-power-supply",
+      "price": 2000.0,
+      "compare_price": 2350.0,
+      "image": "/uploads/products/catalog/3e2a9b04db13a88b750c.webp",
+      "specs": {
+        "output_capacity": "300W, 90% at full load",
+        "protection": "SUVP, OVP, OPP, SCP, Lightning Protection",
+        "fan_size": "120MM Hydraulic Bearing"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/1stplayer/ps-400fk/ps-400fk-01-228x228.webp",
+      "image_sha256": "64a4d1a27b7ea246f897801b5d4314e30ac890f93ca1cddfc4db20d450016ca6",
+      "observed_at": "2026-10-20T09:49:06.178357+00:00"
+    },
+    {
+      "name": "Gamdias AURA GP300 300W Power Supply",
+      "brand": "Gamdias",
+      "url": "https://www.startech.com.bd/gamdias-aura-gp300-power-supply",
+      "price": 1900.0,
+      "compare_price": 2400.0,
+      "image": "/uploads/products/catalog/ead7bcd18a34ed23dc16.webp",
+      "specs": {
+        "power_output_capacity": "300W",
+        "fan_type": "120mm Silent Fan"
+      },
+      "site": "startech",
+      "cat_slug": "power-supplies",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/power-supply/gamdias/aura-gp300/aura-gp300-01-228x228.webp",
+      "image_sha256": "7a6c7f47f611ab799d9f1296b04b0247f1e66cc14eaff8e275ae221e46e556bf",
+      "observed_at": "2026-10-20T09:49:06.181822+00:00"
+    },
+    {
+      "name": "MSI MEG MAESTRO 900R ARGB EATX Full Tower Gaming Casing",
+      "brand": "MSI",
+      "url": "https://www.startech.com.bd/msi-meg-maestro-900r-casing",
+      "price": 130000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/4872001281b27e0d667e.webp",
+      "specs": {
+        "motherboard_support": "EATX, ATX, M-ATX, ITX",
+        "maximum_gpu_length": "440 mm",
+        "pre_installed_fans": "3 x 160 mm ARGB Fans (Bottom)",
+        "i_o_ports": "4x USB, 5x Type-C, 1x Mic-in / Audio-out, 1 x LED Switch Button"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/msi/meg-maestro-900r/meg-maestro-900r-01-228x228.webp",
+      "image_sha256": "c3a3e2d44399d9d0c31b5680110d47b045b5d1c7057419040049fdb9db6c39ff",
+      "observed_at": "2026-10-20T09:49:07.624863+00:00"
+    },
+    {
+      "name": "T-Wolf YORU ARGB Mid-Tower ATX Gaming Casing Black",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-yoru-argb-gaming-casing",
+      "price": 6400.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/81b508bd20627ef2a109.webp",
+      "specs": {
+        "motherboard_support": "ATX / M-ATX / ITX",
+        "pre_install_fans": "7 x Fans",
+        "i_o_ports": "1xType C, 1 x USB3.0, 1 xUSB2.0, HD AUDIO"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/t-wolf/yoru/yoru-black-01-228x228.webp",
+      "image_sha256": "13bd671954f09ffb19114035f4459f775724fa2b5a0559a8c17f578431b7a2e5",
+      "observed_at": "2026-10-20T09:49:07.628572+00:00"
+    },
+    {
+      "name": "T-Wolf Spector ARGB Curved ATX Gaming Casing with Display White",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-spector-argb-curved-gaming-casing-white",
+      "price": 7200.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/a3cac45a4835767770d9.webp",
+      "specs": {
+        "motherboard_support": "ATX / M-ATX / ITX",
+        "pre_install_fans": "6 x Fans",
+        "i_o_ports": "1xType C, 1 x USB3.0, HD AUDIO"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/t-wolf/spector/spector-white-01-228x228.webp",
+      "image_sha256": "34916d40e94bb533519a2d1e369c4fd5f792770b153ea2f5615928a45575a3fa",
+      "observed_at": "2026-10-20T09:49:07.632641+00:00"
+    },
+    {
+      "name": "T-Wolf YORU ARGB Mid-Tower ATX Gaming Casing White",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-yoru-argb-gaming-casing-white",
+      "price": 6600.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/8deda5329b11bb5898bc.webp",
+      "specs": {
+        "motherboard_support": "ATX / M-ATX / ITX",
+        "pre_install_fans": "7 x Fans",
+        "i_o_ports": "1xType C, 1 x USB3.0, 1 xUSB2.0, HD AUDIO"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/t-wolf/yoru/yoru-white-01-228x228.webp",
+      "image_sha256": "9f04ccf4be1b93a4eea7d9f5963370bfbf8c4ec0b207f6a4162336931bc213fa",
+      "observed_at": "2026-10-20T09:49:07.636018+00:00"
+    },
+    {
+      "name": "T-Wolf Spector ARGB Curved ATX Gaming Casing with Display Black",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-spector-argb-curved-gaming-casing",
+      "price": 7000.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/fc15c7dc59da34423488.webp",
+      "specs": {
+        "motherboard_support": "ATX / M-ATX / ITX",
+        "pre_install_fans": "6 x Fans",
+        "i_o_ports": "1xType C, 1 x USB3.0, HD AUDIO"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/t-wolf/spector/spector-black-01-228x228.webp",
+      "image_sha256": "aaed2e8a62a9ea831ef7fdec093dace2eb2c636e9dd6e87abfe8f5b63b60904a",
+      "observed_at": "2026-10-20T09:49:07.639993+00:00"
+    },
+    {
+      "name": "T-Wolf AKUMA ARGB Curved ATX Gaming Casing with Display",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-akuma-argb-curved-gaming-casing",
+      "price": 16500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/9856ffd5af947892ddbd.webp",
+      "specs": {
+        "motherboard_support": "ATX / M-ATX / ITX",
+        "pre_install_fans": "5 x Fans",
+        "in_built": "LCD Display + Temp Display",
+        "i_o_ports": "1xType C, 1 x USB3.0, 1 x USB 2.0, HD AUDIO"
+      },
+      "site": "startech",
+      "cat_slug": "cases",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/casing/t-wolf/akuma/akuma-black-01-228x228.webp",
+      "image_sha256": "b121a0f4c31116d084d0c2d3f840438e551fbfd917b98572d8545a157f11c505",
+      "observed_at": "2026-10-20T09:49:07.644497+00:00"
+    },
+    {
+      "name": "T-Wolf T20 Wired RGB Gaming Keyboard",
+      "brand": "T-Wolf",
+      "url": "https://www.startech.com.bd/t-wolf-t20-wired-rgb-gaming-keyboard",
+      "price": 699.0,
+      "compare_price": 899.0,
+      "image": "/uploads/products/catalog/26e6e933a4f05545245a.webp",
+      "specs": {
+        "number_of_keys": "104",
+        "switch_type": "Membrane",
+        "multi_keys": "Anti-ghosting"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/t-wolf/t20/t20-02-228x228.webp",
+      "image_sha256": "f873814f13a0dff496d32cf2ba45ea181d1147323176d2fd343044c3c5e864a1",
+      "observed_at": "2026-10-20T09:49:09.218204+00:00"
+    },
+    {
+      "name": "Meetion MT-K9320 Waterproof Backlit Gaming Keyboard",
+      "brand": "Meetion",
+      "url": "https://www.startech.com.bd/meetion-mt-k9320-gaming-keyboard",
+      "price": 900.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/84889021f83c7c4280f3.webp",
+      "specs": {
+        "keyboard_layout": "104/105"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/meetion/mt-k9320/mt-k9320-01-228x228.jpg",
+      "image_sha256": "0d49ffa263a2c33a3b6cb5413dd60d0a336bce46e89b4106b7ffb2e56001ea9d",
+      "observed_at": "2026-10-20T09:49:09.223526+00:00"
+    },
+    {
+      "name": "PC Power KMO2G Gaming Keyboard Mouse Combo",
+      "brand": "PC",
+      "url": "https://www.startech.com.bd/pc-power-kmo2g-keyboard-mouse-combo",
+      "price": 750.0,
+      "compare_price": 900.0,
+      "image": "/uploads/products/catalog/7e25bc354be97ad8655e.webp",
+      "specs": {
+        "language": "English, Bangla",
+        "number_of_keys": "104 Keys",
+        "mouse_dpi": "1200-1800-2400-3600, 4 Buttons"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/pc-power/kmo2g/kmo2g-01-228x228.webp",
+      "image_sha256": "cae8ddf2c4162704ef143d5a48a0ceaf95c165830bf1b0adbca975a0e7b64af3",
+      "observed_at": "2026-10-20T09:49:09.226632+00:00"
+    },
+    {
+      "name": "PC Power PGC801DG17 Gaming Keyboard Mouse Combo",
+      "brand": "PC",
+      "url": "https://www.startech.com.bd/pc-power-pgc801dg17-combo",
+      "price": 799.0,
+      "compare_price": 900.0,
+      "image": "/uploads/products/catalog/4b057825964e009e69b9.webp",
+      "specs": {
+        "language": "English, Bangla",
+        "number_of_keys": "104 Keys",
+        "mouse_dpi": "800-1000, 4 Buttons"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/pc-power/pgc801dg17/pgc801dg17-01-228x228.webp",
+      "image_sha256": "a40d0a34cb8c978392d8a913ade5e81c50760e48d9639374ba1968ecfe270c22",
+      "observed_at": "2026-10-20T09:49:09.229782+00:00"
+    },
+    {
+      "name": "PC Power PGC001D105 Gaming Keyboard Mouse Combo",
+      "brand": "PC",
+      "url": "https://www.startech.com.bd/pc-power-pgc001d105-combo",
+      "price": 750.0,
+      "compare_price": 900.0,
+      "image": "/uploads/products/catalog/ad74d24ea576688eb0cd.webp",
+      "specs": {
+        "language": "English, Bangla",
+        "number_of_keys": "104 Keys",
+        "mouse_dpi": "800-1000, 3 Buttons"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/pc-power/pgc001d105/pgc001d105-01-228x228.webp",
+      "image_sha256": "bccff2d54f13489f80c3f5819362ceebe03e52962e2221056b73ac7e43c6e4e6",
+      "observed_at": "2026-10-20T09:49:09.232785+00:00"
+    },
+    {
+      "name": "Havit KB866L Multi-function Backlit Membrane Gaming Keyboard",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-kb866l-gaming-keyboard",
+      "price": 950.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/913c9b3b977871862ac8.webp",
+      "specs": {
+        "interface_type": "USB",
+        "key_number": "112",
+        "cable_length": "1500mm"
+      },
+      "site": "startech",
+      "cat_slug": "keyboards",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/keyboard/havit/kb866l/kb866l-01-228x228.webp",
+      "image_sha256": "4ba760f85af702b3de861538dd2b5e1d9b91b7c64279064f15715b7b3df9e8e2",
+      "observed_at": "2026-10-20T09:49:09.235522+00:00"
+    },
+    {
+      "name": "Havit MS40 Mouse",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-ms40-mouse",
+      "price": 450.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/631dc4b5bb48d4d89351.webp",
+      "specs": {
+        "connectivity": "USB",
+        "resolution": "1200DPI",
+        "key_life": "3,000,000 Times",
+        "number_of_keys": "3"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/havit/ms40/ms40-01-228x228.webp",
+      "image_sha256": "43c357373634c4475d635ad9f5eb7e2cbc69dd6b3517ef016d7456e8413a84e0",
+      "observed_at": "2026-10-20T09:49:10.647620+00:00"
+    },
+    {
+      "name": "Inphic W1s Wired Office Mouse",
+      "brand": "Inphic",
+      "url": "https://www.startech.com.bd/inphic-w1s-mouse",
+      "price": 500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/9ef45a1987ba91f467ca.webp",
+      "specs": {
+        "number_of_buttons": "3 Buttons",
+        "switch_lifetime": "Huano switches rated for 3 million clicks",
+        "resolution": "Up to 1200 DPI",
+        "connectivity": "Wired, Cable Length: 1.5m"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/inphic/w1s/w1s-01-228x228.webp",
+      "image_sha256": "32e389f3b8ac69db2de61ada0ddfb23ede2182dcf45b40ecd4afb186e5a44bfa",
+      "observed_at": "2026-10-20T09:49:10.650886+00:00"
+    },
+    {
+      "name": "Xtrike Me GM-322 RGB Gaming Mouse",
+      "brand": "Xtrike",
+      "url": "https://www.startech.com.bd/xtrike-me-gm-322-mouse",
+      "price": 400.0,
+      "compare_price": 550.0,
+      "image": "/uploads/products/catalog/2af3928494ee7f7ece53.webp",
+      "specs": {
+        "buttons": "7, Key Life: 5 million clicks",
+        "resolution": "Adjustable DPI up to 7200",
+        "polling_rate": "Up to 125Hz",
+        "lighting": "RGB Backlight, Plug & Play USB Connection"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/xtrike-me/gm-322/gm-322-01-228x228.webp",
+      "image_sha256": "c9d906968992ea72d0cb51b5d92457f027903893c64261ce2f157a48f334fe1e",
+      "observed_at": "2026-10-20T09:49:10.654816+00:00"
+    },
+    {
+      "name": "Havit MS44GT Wireless Mouse",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-ms44gt-mouse",
+      "price": 550.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/8075ac7fb3c77452a97b.webp",
+      "specs": {
+        "connectivity": "2.4GHz",
+        "resolution": "1000-1200-1600DPI",
+        "key_life": "3,000,000 Times",
+        "number_of_keys": "4"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/havit/ms44gt/ms44gt-01-228x228.webp",
+      "image_sha256": "92b59e8ef75458016db1596863be288431067ccedf6b03b44953ea325b250702",
+      "observed_at": "2026-10-20T09:49:10.657442+00:00"
+    },
+    {
+      "name": "AJAZZ NJ05 Wired Gaming Mouse",
+      "brand": "AJAZZ",
+      "url": "https://www.startech.com.bd/ajazz-nj05-mouse",
+      "price": 450.0,
+      "compare_price": 600.0,
+      "image": "/uploads/products/catalog/f36c04041909b339ec18.webp",
+      "specs": {
+        "number_of_keys": "6 Keys, 3D Rubber Hybrid Wheel",
+        "resolution": "4-Level DPI (1200/ 1800/ 2400/ 3600 DPI)",
+        "connection": "USB Wired"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/ajazz/nj06/nj06-01-228x228.webp",
+      "image_sha256": "06b9b3a9c88bb1006bff7b89361215d0e6af880c7da8a4931712a17a7265e11b",
+      "observed_at": "2026-10-20T09:49:10.659765+00:00"
+    },
+    {
+      "name": "Havit HV-MS1010 RGB Backlit Gaming Mouse",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-hv-ms1010-gaming-mouse",
+      "price": 620.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/14c4c8798be35454a23b.webp",
+      "specs": {
+        "interface": "USB (1.5m Cable length)",
+        "number_of_keys": "7, Sensor: Optical"
+      },
+      "site": "startech",
+      "cat_slug": "mice",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/mouse/havit/hv-ms1010/hv-ms1010-20-228x228.jpg",
+      "image_sha256": "8c24656c7d07d167a5e818b4b818260d2dce84677c70c63e6f4e29dcdfd0ede9",
+      "observed_at": "2026-10-20T09:49:10.662756+00:00"
+    },
+    {
+      "name": "Havit H202D Stereo Wired Headphone With Mic",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-h202d-wired-headphone-with-mic",
+      "price": 550.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/71ccb1a6c86d4a9076ad.webp",
+      "specs": {
+        "speaker": "Φ40mm",
+        "sensitivity": "108+4dB",
+        "impedance": "32Ω +15%",
+        "frequency_response": "20 Hz to 20KHZ"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/havit/h202d/h202d-01-228x228.webp",
+      "image_sha256": "bca0fd233219391ab08fd74d9092b42c3e51d8beb441fe40023ee4b9d40a0b1d",
+      "observed_at": "2026-10-20T09:49:13.638770+00:00"
+    },
+    {
+      "name": "T-WOLF H150 Wired Gaming Headphone",
+      "brand": "T-WOLF",
+      "url": "https://www.startech.com.bd/t-wolf-h150-gaming-headphone",
+      "price": 550.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/33dc082b1ee85a29ef86.webp",
+      "specs": {
+        "plug_type": "3.5 mm"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/t-wolf/h150/h150-01-228x228.webp",
+      "image_sha256": "3dcd8b9d5c97b38147ea76025b5ee5ae5838ab175fdf0cff99296fd2f826c4cf",
+      "observed_at": "2026-10-20T09:49:15.006552+00:00"
+    },
+    {
+      "name": "T-WOLF H120 RGB Gaming Headphone with Microphone",
+      "brand": "T-WOLF",
+      "url": "https://www.startech.com.bd/t-wolf-h120-wired-gaming-headphone",
+      "price": 650.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/87390bb36792fd6d2dc7.webp",
+      "specs": {
+        "driver_diameter": "40 mm, Impedance 32 Ω ± 10%",
+        "frequency": "20 Hz – 20 kHz (Headphone)",
+        "sensitivity": "108 ± 3 dB/mW, Built-in Mic",
+        "connectivity": "Wired (1.7m Cable), RGB LED"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/t-wolf/h120/h120-02-228x228.webp",
+      "image_sha256": "ce85638c58baf728971bf1718918e6fdb25a774dbd163294fea1487a2e258619",
+      "observed_at": "2026-10-20T09:49:16.425783+00:00"
+    },
+    {
+      "name": "Meetion MT-HP003 3.5mm Wired Headphone",
+      "brand": "Meetion",
+      "url": "https://www.startech.com.bd/meetion-mt-hp003-wired-headphone",
+      "price": 780.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/6fd33194359adcdb734e.webp",
+      "specs": {
+        "frequency": "20Hz to 20KHz",
+        "speaker_driver": "φ40mm",
+        "cable_length": "1.20±0.01m"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/meetion/mt-hp003/mt-hp003-02-228x228.webp",
+      "image_sha256": "e133883b379fd3b2db655222665621f4bf25b96828f9119c3a6e615aa2a2bfba",
+      "observed_at": "2026-10-20T09:49:17.831936+00:00"
+    },
+    {
+      "name": "Havit 2218D 3.5mm Single Port Headphone",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-hv-h2218d-headphone",
+      "price": 800.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/b8e02f14a52615c15e7a.webp",
+      "specs": {
+        "frequency": "20 Hz to 20KHz",
+        "sensitivity": "110dB ± 3dB",
+        "cable_length": "Approx 1.2m±10%"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/havit/h2218d/h2218d-228x228.jpg",
+      "image_sha256": "dd839e4994678460fcc7b151ad16619eaa578f32f4927f7247e8e6391c375a4a",
+      "observed_at": "2026-10-20T09:49:19.322055+00:00"
+    },
+    {
+      "name": "HAVIT HV-H2178D 3.5mm Wired Headphone",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-hv-h2178d-wired-headphone",
+      "price": 800.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/ef8a2b002fb68a78e352.webp",
+      "specs": {
+        "frequency": "20Hz to 20KHz",
+        "sensitivity": "110 dB ± 3 dB",
+        "cable_length": "4ft+-10%"
+      },
+      "site": "startech",
+      "cat_slug": "headsets",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/headphone/havit/h2178d/h2178d-black-1-228x228.jpg",
+      "image_sha256": "4ddba6870936f802f237df42d4920ba83cc3a39d746000622ed7d7a15fef3954",
+      "observed_at": "2026-10-20T09:49:20.757299+00:00"
+    },
+    {
+      "name": "Vyvylabs Wisdom Series VHW06-GY Laptop Stand 6-in-1 Multifunctional HUB Docking Station",
+      "brand": "Vyvylabs",
+      "url": "https://www.startech.com.bd/vyvylabs-wisdom-series-vhw06-gy-laptop-stand",
+      "price": 8400.0,
+      "compare_price": 10470.0,
+      "image": "/uploads/products/catalog/45a0e3322f75c0be6998.webp",
+      "specs": {
+        "input_ports": "2x Type-C, 2x USB 3.1, 1x HDMI 2.0, 1x Ethernet (RJ45)",
+        "resolution_suppot": "up to 4K@60Hz"
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/laptop-stand/vyvylabs/vhw06-gy/vhw06-gy-02-228x228.webp",
+      "image_sha256": "edf08b9e16eef3809bf76fced276a730db8876884f6106e420dd83ccc944b8de",
+      "observed_at": "2026-10-20T09:49:22.335213+00:00"
+    },
+    {
+      "name": "Yuanxin X-2328 Multiport 4-in-1 USB Hub",
+      "brand": "Yuanxin",
+      "url": "https://www.startech.com.bd/yuanxin-x-2328-multiport-4-in-1-usb-hub",
+      "price": 400.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/3c20b97832dadba33039.webp",
+      "specs": {
+        "interface": "USB Male, Quad USB Female",
+        "length": "1.2 & 1.5 Meter",
+        "usb_quantity": "4",
+        "os_compatibility": "Windows 7, 8, 10, Linux, Vista."
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/hub/yuanxin/x-2328/x-2328-01-228x228.webp",
+      "image_sha256": "ad68d4214e45b61139dd98968fc935fcc6c37002313d77ce3a3b90b0a67900a2",
+      "observed_at": "2026-10-20T09:49:22.339314+00:00"
+    },
+    {
+      "name": "Yuanxin YXH-55 Multiport 4-in-1 USB Hub",
+      "brand": "Yuanxin",
+      "url": "https://www.startech.com.bd/yuanxin-yxh-55-usb-to-quad-usb-hub ",
+      "price": 380.0,
+      "compare_price": 400.0,
+      "image": "/uploads/products/catalog/fa3ff73c3ba503d237ec.webp",
+      "specs": {
+        "interface": "USB Male to Quad USB Female",
+        "usb_quantity": "4",
+        "transmission_speed": "480Mbps"
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/hub/yuanxin/yxh-55/yxh-55-02-228x228.webp",
+      "image_sha256": "eef39b53049b5946ea2518c8b958790d1e9a1489b5d6d041b95bba0f5f28bddb",
+      "observed_at": "2026-10-20T09:49:22.342834+00:00"
+    },
+    {
+      "name": "Surpass HC 28 Type-C 4-in-1 Hub",
+      "brand": "Surpass",
+      "url": "https://www.startech.com.bd/surpass-hc-28-hub",
+      "price": 450.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/5b6f98b6d47886c4ac08.webp",
+      "specs": {
+        "interfaces": "Type C, USB 3.0, USB 2.1",
+        "data_transfer_speed": "10Gbps",
+        "material": "PC Fireproof",
+        "compatible_with": "Smartphones, Tablets, Keyboards, Laptops, Desktops"
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/hub/surpass/hc-28/hc-28-01-228x228.webp",
+      "image_sha256": "aa1884cf7d7dc82083477a16d8dbc6fa2b869e8eafea0d9425d8d5f20cfd60c7",
+      "observed_at": "2026-10-20T09:49:23.634522+00:00"
+    },
+    {
+      "name": "Onten OTN-9701D 4-in-1 USB to Type-C Hub",
+      "brand": "Onten",
+      "url": "https://www.startech.com.bd/onten-otn-9701d-usb-hub",
+      "price": 450.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/d185c3b06312a028baa8.webp",
+      "specs": {
+        "number_of_usb_ports": "4",
+        "transmission_speed": "480Mbps",
+        "compatibility": "PC, Laptop, Mouse, Keyboard, U Disk, Printer, Cameras, Phone, Tablet.",
+        "material": "Aluminum alloy + ABS"
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/hub/onten/5208/onten-otn-9701d-228x228.webp",
+      "image_sha256": "5f46900cb0a6f5bd72d0b1e04cf70779d707bddb018d5ec084a8dde7323128a7",
+      "observed_at": "2026-10-20T09:49:25.029028+00:00"
+    },
+    {
+      "name": "HAVIT H91 4-PORT USB2.0 HUB",
+      "brand": "Havit",
+      "url": "https://www.startech.com.bd/havit-h91-hub",
+      "price": 500.0,
+      "compare_price": null,
+      "image": "/uploads/products/catalog/4eb2807050232a4f494d.webp",
+      "specs": {
+        "working_voltage": "5V",
+        "interface": "4 x USB2.0",
+        "charging_voltage": "5V/500mA",
+        "working_current": "100-500mA"
+      },
+      "site": "startech",
+      "cat_slug": "accessories",
+      "source_image": "https://www.startech.com.bd/image/cache/catalog/cable/havit/h91/h91-01-228x228.webp",
+      "image_sha256": "46c50a87294df53db08fa1cd4fa6de746e401651f63e1c507dd5254cb3f42417",
+      "observed_at": "2026-10-20T09:49:26.427175+00:00"
+    }
+  ]
+}

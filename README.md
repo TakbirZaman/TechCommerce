@@ -7,7 +7,7 @@ A full-stack e-commerce platform built with **FastAPI** + **Next.js** featuring 
 ## Features
 
 ### Storefront
-- **Product Catalog** — 69 products across 14 categories with images and specs
+- **Product Catalog** — 90 source-linked products across 15 categories with verified model photos and listed specifications
 - **Search & Autocomplete** — Instant product search with real-time suggestions
 - **Product Reviews** — Star ratings and written reviews on every product
 - **Guest Checkout** — Buy without creating an account
@@ -79,7 +79,7 @@ cd ..
 ### 3. Seed the database & run
 
 ```bash
-# Seed products, specs, images, coupons, reviews
+# Install sourced products, specifications and local photos
 python scripts/seed.py
 
 # Start the backend (port 8000)
@@ -101,13 +101,14 @@ npm run dev
 
 ---
 
-## Login Credentials
+## Initial administrator
 
-| Account | Email | Password |
-|---------|-------|----------|
-| **Admin** | `admin@gmail.com` | `admin123` |
+Before seeding a new deployment, set `SEED_ADMIN_EMAIL` and
+`SEED_ADMIN_PASSWORD` in your environment. Use a unique password of at least
+12 characters. Without both values, the catalog is installed and admin creation
+is skipped. Existing admin accounts and passwords are left unchanged.
 
-Guest checkout works without login — just fill in name, phone, email, and address at checkout.
+Guest checkout works without login — fill in name, phone, email, and address at checkout.
 
 ---
 
@@ -201,13 +202,38 @@ TechCommerce/
 
 ---
 
-## Coupons (Seeded)
+## Product data and photos
 
-| Code | Discount | Min. Order | Expires |
-|------|----------|------------|---------|
-| `WELCOME10` | 10% off | ৳0 | 2026-12-31 |
-| `FLAT500` | ৳500 off | ৳5,000 | 2026-12-31 |
-| `TECH20` | 20% off | ৳10,000 | 2026-06-30 |
+Normal seeding loads the checked-in `data/catalog.json` snapshot without network
+requests. It contains 90 product listings across all 15 categories, with BDT
+reference prices observed on 20 October 2026, factual listing specifications,
+source product/image URLs, capture timestamps, and SHA-256 photo checksums.
+Model-matched 500 × 500 photographs are bundled as optimized WebP files in
+`uploads/products/catalog/`; pages use uncropped product-image sizing.
+
+Source: [Star Tech](https://www.startech.com.bd/). Product images retain their
+original owners' rights; source links are retained for attribution and review.
+Prices are dated reference observations, not a live feed. No reviews, orders,
+sales counts, discounts, or warehouse quantities are invented by this seed.
+New products start with zero warehouse stock: set your selling prices and actual
+stock in **Admin → Products** before taking orders. Existing operator prices,
+stock, status and uploaded galleries survive repeated seeding.
+
+Running `python scripts/seed.py` on an older database retires recognizable demo
+products that still have only category placeholders. It keeps their database
+rows and order history, and preserves products with operator-uploaded photos.
+Back up an existing database before any catalog migration.
+
+To capture a new snapshot manually (requires network access):
+
+```bash
+python scripts/refresh_catalog.py --per-category 6
+python scripts/seed.py
+```
+
+The refresh refuses to replace the snapshot if any category is missing. Existing
+products' selling prices are deliberately preserved by the seed; review the new
+reference prices in `data/catalog.json` and update selling prices in Admin.
 
 ---
 

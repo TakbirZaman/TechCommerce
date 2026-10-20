@@ -120,7 +120,7 @@ export default function AdvisorPage() {
                 <div className="flex gap-4">
                   <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     {rec.product_image ? (
-                      <img src={rec.product_image} alt={rec.product_name} className="w-full h-full object-cover rounded-lg" />
+                      <img src={assetUrl(rec.product_image)} alt={rec.product_name} className="w-full h-full object-contain bg-white rounded-lg" />
                     ) : (
                       <span className="text-2xl">📦</span>
                     )}
@@ -186,7 +186,7 @@ export default function AdvisorPage() {
               >
                 <div className="h-32 bg-gray-100 flex items-center justify-center">
                   {product.images?.[0]?.url ? (
-                    <img src={assetUrl(product.images[0].url)} alt={product.name} className="h-full w-full object-cover" />
+                    <img src={assetUrl(product.images[0].url)} alt={product.name} className="h-full w-full object-contain bg-white" />
                   ) : (
                     <span className="text-3xl">📦</span>
                   )}

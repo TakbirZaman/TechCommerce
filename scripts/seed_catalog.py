@@ -1,20 +1,8 @@
-"""
-Seed Catalog - Expands TechCommerce with a realistic, large-scale catalog.
+"""Catalog templates and source-linked seeding.
 
-Generates ~1,000-1,500 real-world tech products across all 15 categories
-(real product lines x real variant combinations), spec templates + options
-for ALL 15 categories, Bangladeshi-flavored product reviews, discount
-coupons, sample guest orders spread over the last 60 days, and category
-SVG placeholder images.
-
-Design notes:
-- Idempotent: preloads existing slugs/SKUs/coupon codes/order numbers and
-  skips anything already present. Never deletes or duplicates base seed data.
-- Deterministic: all randomness via random.Random(42).
-- Batch inserts with periodic flush/commit for speed.
-- BDT (Bangladeshi Taka) pricing approximating local retail (Startech/Ryans).
-
-Run: python scripts/seed.py   (invoked automatically after base seeding)
+Normal seeding installs data/catalog.json and bundled product photographs.
+Historical synthetic generator functions remain for development reference;
+seed_catalog never invokes them or creates reviews, orders, or fake activity.
 """
 import os
 import random
@@ -2141,26 +2129,17 @@ def seed_catalog(db=None):
     if owns_db:
         db = SessionLocal()
     try:
-        print("\n=== Catalog seeding: products, reviews, coupons, orders ===")
+        print("\n=== Sourced catalog seeding ===")
         brands = _ensure_brands(db)
         cats = {c.slug: c for c in db.query(Category).all()}
         if not cats:
             print("[!!] No categories found — run base seed first")
             return
         _ensure_templates(db, cats)
-        svg_count = write_placeholder_svgs()
-        print(f"[OK] {svg_count} category placeholder SVGs written to uploads/products/")
         _seed_spec_options(db, cats)
-
-        total, per_category, new_products = _seed_products(db, cats, brands)
-        _backfill_existing_products(db, cats)
-
-        zones = db.query(DeliveryZone).filter(DeliveryZone.is_active == True).all()  # noqa: E712
-        _seed_reviews(db, new_products)
-        _seed_coupons(db)
-        _seed_orders(db, new_products, zones)
-
-        print(f"[DONE] Catalog seeding complete — {total} products added")
+        from scripts.seed_real_catalog import seed_real_catalog
+        total = seed_real_catalog(db)
+        print(f"[DONE] Sourced catalog ready — {total} products")
     finally:
         if owns_db:
             db.close()

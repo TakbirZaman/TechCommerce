@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
                         : 'border-transparent hover:border-primary-300'
                     }`}
                   >
-                    <img src={assetUrl(img.url)} alt="" className="w-full h-full object-cover" />
+                    <img src={assetUrl(img.url)} alt="" className="w-full h-full object-contain bg-white" />
                   </motion.button>
                 ))}
               </div>

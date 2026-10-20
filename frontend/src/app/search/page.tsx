@@ -58,7 +58,7 @@ function ProductCard({
             <img
               src={assetUrl(product.images[0].url)}
               alt={product.name}
-              className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-110"
+              className="h-full w-full object-contain bg-white transition-transform duration-500 ease-out-expo group-hover:scale-110"
             />
           ) : (
             <span className="text-4xl transition-transform duration-300 group-hover:scale-125 group-hover:-rotate-6">
